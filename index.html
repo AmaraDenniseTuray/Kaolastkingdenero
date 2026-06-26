@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Black Leo Music</title>
+    <title>Black Leo Music App</title>
     <style>
         * {
             margin: 0;
@@ -185,7 +185,7 @@
 
         <!-- Body Section (60%) -->
         <div class="body-section">
-            <!-- Slider Dots - Extreme Top (Now 4 dots) -->
+            <!-- Slider Dots - Extreme Top (4 dots) -->
             <div class="slider-dots">
                 <div class="dot active" data-index="0"></div>
                 <div class="dot" data-index="1"></div>
@@ -209,7 +209,9 @@
         const totalSlides = 4;
 
         function updateSlider() {
-            sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
+            // FIX: Since wrapper is 400% wide and each slide is 25%,
+            // we move by 25% of the wrapper per slide (not 100%)
+            sliderWrapper.style.transform = `translateX(-${currentIndex * 25}%)`;
 
             dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === currentIndex);
