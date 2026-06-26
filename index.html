@@ -31,6 +31,7 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         /* Banner Section - 40% */
@@ -140,6 +141,8 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             align-self: center;
             margin-top: 135px;
+            text-decoration: none;
+            display: inline-block;
         }
 
         .get-started-btn:hover {
@@ -198,11 +201,12 @@
                 Discover a universe of unlimited beats, curated playlists, and exclusive tracks tailored just for you. 
                 Dive into the rhythm and let your favorite artists soundtrack your every moment.
             </p>
-            <button class="get-started-btn">GET STARTED</button>
+            <a href="sSignup-page.html" class="get-started-btn">GET STARTED</a>
         </div>
     </div>
 
     <script>
+        // Slider functionality
         const sliderWrapper = document.getElementById('sliderWrapper');
         const dots = document.querySelectorAll('.dot');
         let currentIndex = 0;
@@ -228,7 +232,7 @@
             });
         });
 
-        // Auto-play slider - increased interval for smoother feel
+        // Auto-play slider
         setInterval(nextSlide, 4000);
 
         // Touch/Swipe support
