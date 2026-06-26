@@ -29,33 +29,9 @@
             border-radius: 40px;
             overflow: hidden;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
             position: relative;
         }
 
-        /* Page Sections */
-        .page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            transition: opacity 0.5s ease;
-        }
-
-        .page.hidden {
-            opacity: 0;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .page.active {
-            opacity: 1;
-            z-index: 10;
-        }
-
-        /* SignUp Page Styles */
         .signup-page {
             width: 100%;
             height: 100%;
@@ -106,6 +82,8 @@
             width: 100%;
             background-color: #0066FF;
             color: white;
+            text-decoration: none;
+            text-align: center;
             border: none;
             padding: 16px 40px;
             border-radius: 30px;
@@ -136,6 +114,7 @@
             backdrop-filter: blur(5px);
             text-decoration: none;
             display: inline-block;
+            text-align: center;
         }
 
         .already-have-account:hover {
@@ -166,241 +145,29 @@
             background: rgba(255, 255, 255, 0.3);
         }
 
-        /* Email Signup Page Styles */
-        .email-signup-page {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 100%);
-            background-image: url('IMG_5.png');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
-            padding: 40px 30px;
-            position: relative;
-        }
-
-        .email-signup-page::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1;
-        }
-
-        .email-signup-content {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            margin-top: 80px;
-            gap: 18px;
-        }
-
-        .email-signup-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: white;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-            margin-bottom: 10px;
-        }
-
-        .input-field {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 16px 20px;
-            border-radius: 12px;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .input-field::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .input-field:focus {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: #0066FF;
-            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
-        }
-
-        .continue-btn {
-            width: 100%;
-            background-color: #0066FF;
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            margin-top: 10px;
-        }
-
-        .continue-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(0, 102, 255, 0.5);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 14px;
-            margin: 15px 0 5px 0;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .divider span {
-            padding: 0 15px;
-        }
-
-        .social-btn {
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.15);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 14px 40px;
-            border-radius: 30px;
-            font-size: 15px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .social-btn:hover {
-            background-color: rgba(255, 255, 255, 0.25);
-            border-color: white;
-            transform: translateY(-2px);
-        }
-
-        .social-btn svg {
-            width: 20px;
-            height: 20px;
-        }
-
-        .google-btn:hover {
-            background-color: rgba(255, 255, 255, 0.9);
-            color: #333;
-        }
-
-        .apple-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-        }
-
-        /* Responsive */
         @media (max-width: 480px) {
             .app-container {
                 height: 100vh;
                 max-width: 100%;
                 border-radius: 0;
             }
-            
             .signup-page-content {
                 margin-top: 120px;
-            }
-
-            .email-signup-content {
-                margin-top: 60px;
             }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- SignUp Options Page -->
-        <div class="page signup-page active" id="signupOptionsPage">
+        <div class="signup-page">
             <a href="index.html" class="back-btn">← Back</a>
             <div class="signup-page-content">
                 <h2 class="signup-title">SignUp</h2>
-                <button class="signup-btn" id="createAccountBtn">Create an Account</button>
+                <!-- Links to the email signup page -->
+                <a href="email-signup.html" class="signup-btn">Create an Account</a>
                 <a href="#" class="already-have-account">I already have an account</a>
             </div>
         </div>
-
-        <!-- Email Signup Page -->
-        <div class="page email-signup-page hidden" id="emailSignupPage">
-            <button class="back-btn" id="backToSignupBtn">← Back</button>
-            <div class="email-signup-content">
-                <h2 class="email-signup-title">Sign up with email</h2>
-                
-                <input type="text" class="input-field" placeholder="Full Name">
-                <input type="email" class="input-field" placeholder="Email Address">
-                <input type="password" class="input-field" placeholder="Password">
-                
-                <button class="continue-btn">Continue</button>
-                
-                <div class="divider">
-                    <span>Or sign up with</span>
-                </div>
-                
-                <button class="social-btn google-btn">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Continue with Google
-                </button>
-                
-                <button class="social-btn apple-btn">
-                    <svg viewBox="0 0 24 24" fill="white">
-                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Continue with Apple
-                </button>
-            </div>
-        </div>
     </div>
-
-    <script>
-        // Page Navigation
-        const signupOptionsPage = document.getElementById('signupOptionsPage');
-        const emailSignupPage = document.getElementById('emailSignupPage');
-        const createAccountBtn = document.getElementById('createAccountBtn');
-        const backToSignupBtn = document.getElementById('backToSignupBtn');
-
-        createAccountBtn.addEventListener('click', () => {
-            signupOptionsPage.classList.remove('active');
-            signupOptionsPage.classList.add('hidden');
-            emailSignupPage.classList.remove('hidden');
-            emailSignupPage.classList.add('active');
-        });
-
-        backToSignupBtn.addEventListener('click', () => {
-            emailSignupPage.classList.remove('active');
-            emailSignupPage.classList.add('hidden');
-            signupOptionsPage.classList.remove('hidden');
-            signupOptionsPage.classList.add('active');
-        });
-    </script>
 </body>
 </html>
