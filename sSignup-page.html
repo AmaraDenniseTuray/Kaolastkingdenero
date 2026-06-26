@@ -93,6 +93,8 @@
             cursor: pointer;
             box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: block;
+            box-sizing: border-box;
         }
 
         .signup-btn:hover {
@@ -100,7 +102,9 @@
             box-shadow: 0 12px 28px rgba(0, 102, 255, 0.5);
         }
 
+        /* Updated to match the exact size of .signup-btn */
         .already-have-account {
+            width: 100%; /* Added to make it full width */
             background-color: transparent;
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.6);
@@ -113,8 +117,9 @@
             transition: all 0.3s ease;
             backdrop-filter: blur(5px);
             text-decoration: none;
-            display: inline-block;
+            display: block; /* Changed from inline-block to block */
             text-align: center;
+            box-sizing: border-box; /* Ensures padding doesn't break the 100% width */
         }
 
         .already-have-account:hover {
@@ -165,7 +170,7 @@
                 <h2 class="signup-title">SignUp</h2>
                 <!-- Links to the email signup page -->
                 <a href="email-signup.html" class="signup-btn">Create an Account</a>
-                <a href="#" class="already-have-account">Log in</a> 
+                <a href="email-signup.html" class="already-have-account">Log in</a> 
             </div>
         </div>
     </div>
