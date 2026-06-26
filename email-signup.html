@@ -158,6 +158,43 @@
             height: 20px;
         }
 
+        /* Login Prompt Styles */
+        .login-prompt {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Creates the break between text and button */
+        }
+
+        .login-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: transparent;
+            color: #0066FF;
+            border: 2px solid #0066FF;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #0066FF;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2);
+        }
+
         .back-btn {
             position: absolute;
             top: 30px;
@@ -223,6 +260,12 @@
                     </svg>
                     Continue with Apple
                 </button>
+
+                <!-- Login Prompt Below the Form -->
+                <div class="login-prompt">
+                    <p class="login-text">I already have an account?</p>
+                    <button class="login-btn">Log in</button>
+                </div>
             </div>
         </div>
     </div>
