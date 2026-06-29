@@ -86,6 +86,22 @@
             box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
         }
 
+        .input-field.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #ef4444;
+            margin-left: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         .continue-btn {
             width: 100%;
             background-color: #0066FF;
@@ -105,6 +121,12 @@
         .continue-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(0, 102, 255, 0.3);
+        }
+
+        .continue-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .divider {
@@ -143,12 +165,19 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            position: relative;
         }
 
         .social-btn:hover {
             background-color: #f9fafb;
             border-color: #d1d5db;
             transform: translateY(-2px);
+        }
+
+        .social-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .social-btn svg {
@@ -189,7 +218,6 @@
             color: white;
         }
 
-        /* Styles for the new Sign Up prompt in Login view */
         .signup-prompt {
             margin-top: 25px;
             text-align: center;
@@ -218,26 +246,163 @@
             color: white;
         }
 
-        .back-btn {
-            position: absolute;
-            top: 30px;
-            left: 20px;
-            background: #f3f4f6;
-            border: none;
+        /* Provider Form Styles */
+        .provider-form {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .provider-form.active {
+            display: flex;
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .provider-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .provider-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .provider-icon.google {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .provider-icon.facebook {
+            background: #1877F2;
+        }
+
+        .provider-icon.facebook svg {
+            fill: white;
+        }
+
+        .provider-icon.apple {
+            background: #000;
+        }
+
+        .provider-icon.apple svg {
+            fill: white;
+        }
+
+        .provider-title {
+            font-size: 20px;
+            font-weight: 800;
             color: #111827;
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 3;
-            transition: all 0.3s ease;
-            text-decoration: none;
+        }
+
+        .provider-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
             display: inline-block;
         }
 
-        .back-btn:hover {
-            background: #e5e7eb;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Success Modal Overlay */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .success-message {
+            font-size: 14px;
+            color: #6b7280;
+            text-align: center;
+            padding: 0 30px;
+        }
+
+        .provider-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .provider-badge svg {
+            width: 16px;
+            height: 16px;
         }
 
         @media (max-width: 480px) {
@@ -252,22 +417,23 @@
 <body>
     <div class="app-container">
         <div class="email-signup-page">
-            <a href="sSignup-page.html" class="back-btn">← Back</a>
             
-            <div class="email-signup-content">
+            <!-- Main Signup Content -->
+            <div class="email-signup-content" id="mainContent">
                 <div class="input-group">
                     <label class="input-label" for="email">Email</label>
                     <input type="email" id="email" class="input-field" placeholder="Email Address">
+                    <span class="error-message" id="emailError">Please enter a valid email address</span>
                 </div>
                 
-                <button class="continue-btn">Continue</button>
+                <button class="continue-btn" id="continueBtn">Continue</button>
                 
                 <div class="divider">
                     <span id="dividerText">Or sign up with</span>
                 </div>
                 
                 <div id="socialButtons">
-                    <button class="social-btn google-btn">
+                    <button class="social-btn google-btn" data-provider="Google">
                         <svg viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -276,7 +442,7 @@
                         </svg>
                         Continue with Google
                     </button>
-                    <button class="social-btn apple-btn" style="margin-top: 12px;">
+                    <button class="social-btn apple-btn" data-provider="Apple" style="margin-top: 12px;">
                         <svg viewBox="0 0 24 24" fill="#000000">
                             <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                         </svg>
@@ -289,53 +455,285 @@
                     <button type="button" class="login-btn" id="loginBtn">Log in</button>
                 </div>
             </div>
+
+            <!-- Google/Apple Form (Email only) -->
+            <div class="provider-form" id="emailProviderForm">
+                <div class="provider-header">
+                    <div class="provider-icon" id="emailProviderIcon"></div>
+                    <div>
+                        <div class="provider-title" id="emailProviderTitle">Continue with Google</div>
+                        <div class="provider-subtitle" id="emailProviderSubtitle">Enter your Google email to continue</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="providerEmail">Email</label>
+                    <input type="email" id="providerEmail" class="input-field" placeholder="your@email.com">
+                    <span class="error-message" id="providerEmailError">Please enter a valid email address</span>
+                </div>
+                
+                <button class="continue-btn" id="providerContinueBtn">Continue</button>
+            </div>
+
+            <!-- Facebook Form (Username + Password) -->
+            <div class="provider-form" id="facebookForm">
+                <div class="provider-header">
+                    <div class="provider-icon facebook">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="provider-title">Continue with Facebook</div>
+                        <div class="provider-subtitle">Enter your Facebook credentials</div>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="fbUsername">Username or Email</label>
+                    <input type="text" id="fbUsername" class="input-field" placeholder="Your Facebook username or email">
+                    <span class="error-message" id="fbUsernameError">Please enter your username or email</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label" for="fbPassword">Password</label>
+                    <input type="password" id="fbPassword" class="input-field" placeholder="Your Facebook password">
+                    <span class="error-message" id="fbPasswordError">Please enter your password</span>
+                </div>
+                
+                <button class="continue-btn" id="fbContinueBtn">Continue</button>
+            </div>
+        </div>
+
+        <!-- Success Overlay -->
+        <div class="success-overlay" id="successOverlay">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="success-title">Welcome!</div>
+            <div class="provider-badge" id="providerBadge">
+                <span id="providerName">Google</span>
+            </div>
+            <div class="success-message">You've successfully logged in. Redirecting to your music...</div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const mainContent = document.getElementById('mainContent');
+            const emailProviderForm = document.getElementById('emailProviderForm');
+            const facebookForm = document.getElementById('facebookForm');
             const loginBtn = document.getElementById('loginBtn');
             const loginPrompt = document.getElementById('loginPrompt');
             const dividerText = document.getElementById('dividerText');
             const socialButtons = document.getElementById('socialButtons');
+            const continueBtn = document.getElementById('continueBtn');
+            const emailInput = document.getElementById('email');
+            const successOverlay = document.getElementById('successOverlay');
+            const providerName = document.getElementById('providerName');
+            const providerBadge = document.getElementById('providerBadge');
 
-            const loginButtonsHTML = `
-                <button class="social-btn google-btn">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    Continue with Google
-                </button>
-                <button class="social-btn facebook-btn" style="margin-top: 12px;">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    Continue with Facebook
-                </button>
-                <button class="social-btn apple-btn" style="margin-top: 12px;">
-                    <svg viewBox="0 0 24 24" fill="#000000">
-                        <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-                    </svg>
-                    Continue with Apple
-                </button>
-                
-                <div class="signup-prompt">
-                    Don't have an account?<br>
-                    <button type="button" class="signup-link">Sign up</button>
-                </div>
-            `;
+            // Provider icons for the form header
+            const providerIconHTML = {
+                'Google': `<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`,
+                'Apple': `<svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>`,
+                'Facebook': `<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
+            };
 
+            // Show the appropriate provider form
+            function showProviderForm(provider) {
+                mainContent.style.display = 'none';
+
+                if (provider === 'Google' || provider === 'Apple') {
+                    const icon = document.getElementById('emailProviderIcon');
+                    icon.className = 'provider-icon ' + provider.toLowerCase();
+                    icon.innerHTML = providerIconHTML[provider];
+                    document.getElementById('emailProviderTitle').textContent = `Continue with ${provider}`;
+                    document.getElementById('emailProviderSubtitle').textContent = `Enter your ${provider} email to continue`;
+                    document.getElementById('providerEmail').value = '';
+                    document.getElementById('providerEmail').classList.remove('error');
+                    document.getElementById('providerEmailError').classList.remove('show');
+                    emailProviderForm.classList.add('active');
+                    setTimeout(() => document.getElementById('providerEmail').focus(), 100);
+                } else if (provider === 'Facebook') {
+                    document.getElementById('fbUsername').value = '';
+                    document.getElementById('fbPassword').value = '';
+                    document.getElementById('fbUsername').classList.remove('error');
+                    document.getElementById('fbPassword').classList.remove('error');
+                    document.getElementById('fbUsernameError').classList.remove('show');
+                    document.getElementById('fbPasswordError').classList.remove('show');
+                    facebookForm.classList.add('active');
+                    setTimeout(() => document.getElementById('fbUsername').focus(), 100);
+                }
+            }
+
+            // Return to main content
+            function showMainContent() {
+                emailProviderForm.classList.remove('active');
+                facebookForm.classList.remove('active');
+                mainContent.style.display = 'flex';
+            }
+
+            // Email validation
+            function isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+
+            // Show success and redirect
+            function showSuccess(provider, userEmail) {
+                providerName.textContent = provider;
+                providerBadge.innerHTML = providerIconHTML[provider] + `<span>${provider}</span>`;
+                successOverlay.classList.add('show');
+
+                localStorage.setItem('blackleo_logged_in', 'true');
+                localStorage.setItem('blackleo_user_email', userEmail);
+                localStorage.setItem('blackleo_login_provider', provider);
+                localStorage.setItem('blackleo_user_name', userEmail.split('@')[0]);
+
+                setTimeout(() => {
+                    window.location.href = 'sHome-page.html';
+                }, 2000);
+            }
+
+            // Handle Google/Apple Continue button
+            document.getElementById('providerContinueBtn').addEventListener('click', () => {
+                const emailField = document.getElementById('providerEmail');
+                const emailError = document.getElementById('providerEmailError');
+                const btn = document.getElementById('providerContinueBtn');
+                const email = emailField.value.trim();
+                const provider = document.getElementById('emailProviderTitle').textContent.replace('Continue with ', '');
+
+                emailField.classList.remove('error');
+                emailError.classList.remove('show');
+
+                if (!email || !isValidEmail(email)) {
+                    emailField.classList.add('error');
+                    emailError.classList.add('show');
+                    emailField.focus();
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                setTimeout(() => {
+                    showSuccess(provider, email);
+                }, 1500);
+            });
+
+            // Handle Facebook Continue button
+            document.getElementById('fbContinueBtn').addEventListener('click', () => {
+                const usernameField = document.getElementById('fbUsername');
+                const passwordField = document.getElementById('fbPassword');
+                const usernameError = document.getElementById('fbUsernameError');
+                const passwordError = document.getElementById('fbPasswordError');
+                const btn = document.getElementById('fbContinueBtn');
+                const username = usernameField.value.trim();
+                const password = passwordField.value.trim();
+
+                usernameField.classList.remove('error');
+                passwordField.classList.remove('error');
+                usernameError.classList.remove('show');
+                passwordError.classList.remove('show');
+
+                let hasError = false;
+
+                if (!username) {
+                    usernameField.classList.add('error');
+                    usernameError.classList.add('show');
+                    if (!hasError) usernameField.focus();
+                    hasError = true;
+                }
+
+                if (!password) {
+                    passwordField.classList.add('error');
+                    passwordError.classList.add('show');
+                    if (!hasError) passwordField.focus();
+                    hasError = true;
+                }
+
+                if (hasError) return;
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                setTimeout(() => {
+                    const fbEmail = username.includes('@') ? username : `${username}@facebook.com`;
+                    showSuccess('Facebook', fbEmail);
+                }, 1500);
+            });
+
+            // Attach click handlers to social buttons
+            function attachSocialHandlers() {
+                const socialBtns = document.querySelectorAll('.social-btn');
+                socialBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const provider = btn.getAttribute('data-provider');
+                        showProviderForm(provider);
+                    });
+                });
+            }
+
+            attachSocialHandlers();
+
+            // Main Continue button (email signup)
+            continueBtn.addEventListener('click', () => {
+                const email = emailInput.value.trim();
+                emailInput.classList.remove('error');
+                document.getElementById('emailError').classList.remove('show');
+
+                if (!email || !isValidEmail(email)) {
+                    emailInput.classList.add('error');
+                    document.getElementById('emailError').classList.add('show');
+                    emailInput.focus();
+                    return;
+                }
+
+                continueBtn.disabled = true;
+                continueBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+                setTimeout(() => {
+                    showSuccess('Email', email);
+                }, 1500);
+            });
+
+            // Login button (switches to login view)
             if (loginBtn) {
                 loginBtn.addEventListener('click', () => {
-                    // Switch to Login View
                     loginPrompt.style.display = 'none';
                     dividerText.textContent = 'Log in with';
-                    socialButtons.innerHTML = loginButtonsHTML;
-                    
-                    // Attach click event to the newly created "Sign up" button
+                    socialButtons.innerHTML = `
+                        <button class="social-btn google-btn" data-provider="Google">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continue with Google
+                        </button>
+                        <button class="social-btn facebook-btn" data-provider="Facebook" style="margin-top: 12px;">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Continue with Facebook
+                        </button>
+                        <button class="social-btn apple-btn" data-provider="Apple" style="margin-top: 12px;">
+                            <svg viewBox="0 0 24 24" fill="#000000">
+                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                            </svg>
+                            Continue with Apple
+                        </button>
+                        
+                        <div class="signup-prompt">
+                            Don't have an account?<br>
+                            <button type="button" class="signup-link">Sign up</button>
+                        </div>
+                    `;
+
+                    attachSocialHandlers();
+
                     const newSignupBtn = socialButtons.querySelector('.signup-link');
                     if (newSignupBtn) {
                         newSignupBtn.addEventListener('click', () => {
@@ -344,6 +742,19 @@
                     }
                 });
             }
+
+            // Enter key support for forms
+            document.getElementById('providerEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('providerContinueBtn').click();
+            });
+
+            document.getElementById('fbPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('fbContinueBtn').click();
+            });
+
+            document.getElementById('fbUsername').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('fbPassword').focus();
+            });
         });
     </script>
 </body>
