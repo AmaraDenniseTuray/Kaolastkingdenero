@@ -1,1 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music App - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
 
+        body {
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 850px;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .menu-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .menu-toggle:hover { transform: scale(1.05); border-color: white; background: rgba(255, 255, 255, 0.3); }
+        .menu-toggle svg { width: 22px; height: 22px; fill: white; }
+
+        .side-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100%;
+            background: white;
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+        }
+
+        .side-menu.open { transform: translateX(0); }
+
+        .menu-header { padding: 30px 20px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; }
+        .menu-user-info { display: flex; align-items: center; gap: 15px; }
+        .menu-user-info img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); object-fit: cover; }
+        .menu-user-details h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+        .menu-user-details p { font-size: 12px; opacity: 0.8; }
+
+        .menu-items { flex: 1; padding: 10px 0; overflow-y: auto; }
+        .menu-item { display: flex; align-items: center; gap: 15px; padding: 15px 25px; font-size: 15px; color: #111827; cursor: pointer; transition: background 0.2s; text-decoration: none; }
+        .menu-item:hover { background: #f9fafb; }
+        .menu-item svg { width: 20px; height: 20px; fill: #6b7280; }
+        .menu-item.active { color: #7c3aed; background: #f5f3ff; }
+        .menu-item.active svg { fill: #7c3aed; }
+        .menu-item.logout { color: #ef4444; margin-top: auto; border-top: 1px solid #f3f4f6; }
+        .menu-item.logout svg { fill: #ef4444; }
+
+        .menu-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .menu-overlay.open { opacity: 1; pointer-events: auto; }
+
+        .user-profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: visible;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .user-profile:hover { transform: scale(1.05); border-color: white; background: rgba(255, 255, 255, 0.3); }
+        .user-profile img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+        .banner-section {
+            height: 25%;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 20px 20px 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            position: relative;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-right: 55px;
+            margin-left: 55px;
+            position: relative;
+        }
+        .search-container svg { width: 18px; height: 18px; fill: white; margin-right: 10px; flex-shrink: 0; }
+        .search-container input { background: transparent; border: none; outline: none; color: white; font-size: 14px; width: 100%; }
+        .search-container input::placeholder { color: rgba(255, 255, 255, 0.7); }
+
+        .clear-search { position: absolute; right: 10px; background: rgba(255, 255, 255, 0.3); border: none; border-radius: 50%; width: 24px; height: 24px; display: none; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+        .clear-search:hover { background: rgba(255, 255, 255, 0.5); }
+        .clear-search svg { width: 14px; height: 14px; fill: white; margin: 0; }
+        .clear-search.visible { display: flex; }
+
+        .cards-container { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .cards-container::-webkit-scrollbar { display: none; }
+        .category-card { min-width: 85px; height: 90px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(10px); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: transform 0.2s ease, background 0.2s ease; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .category-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.25); }
+        .category-card svg { width: 24px; height: 24px; fill: white; }
+        .category-card span { color: white; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+        .add-card { background: rgba(255, 255, 255, 0.9); }
+        .add-card svg { fill: #7c3aed; }
+        .add-card span { color: #7c3aed; }
+
+        .body-section {
+            height: 75%;
+            background: #ffffff;
+            padding: 0 20px 90px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .filter-bar { position: sticky; top: 0; background: white; z-index: 10; display: flex; gap: 8px; padding: 15px 0 10px 0; margin-bottom: 10px; margin-left: -20px; margin-right: -20px; padding-left: 20px; padding-right: 20px; }
+        .filter-btn { flex: 1; text-align: center; padding: 8px 2px; border-radius: 20px; border: 1px solid #e5e7eb; background: white; color: #6b7280; font-size: 11px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: all 0.2s ease; }
+        .filter-btn:hover { background: #f9fafb; }
+        .filter-btn.active { background: #7c3aed; color: white; border-color: #7c3aed; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .search-results { display: none; padding-right: 30px; padding-bottom: 20px; }
+        .search-results.active { display: block; }
+        .search-section-title { font-size: 16px; font-weight: 700; color: #111827; margin: 20px 0 10px 0; padding-left: 5px; }
+        .no-results { text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 14px; }
+
+        .albums-container, .artist-container { display: flex; flex-direction: column; gap: 20px; padding-right: 30px; padding-bottom: 20px; }
+        .artist-row { display: flex; align-items: center; gap: 15px; padding: 10px; border-radius: 16px; transition: background 0.2s ease; }
+        .artist-row:hover { background: #f9fafb; }
+        .artist-avatar { width: 55px; height: 55px; border-radius: 50%; background: #e5e7eb; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .artist-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .artist-info { flex: 1; min-width: 0; }
+        .artist-name { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .artist-meta { font-size: 12px; color: #6b7280; }
+        .artist-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+
+        .album-group { border-radius: 16px; transition: all 0.3s ease; }
+        .album-header { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 16px; cursor: pointer; transition: background 0.2s ease; }
+        .album-header:hover { background: #f9fafb; }
+        .album-cover-large { width: 70px; height: 70px; border-radius: 14px; background: #e5e7eb; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .album-cover-large img { width: 100%; height: 100%; object-fit: cover; }
+        .album-header-info { flex: 1; }
+        .album-header-title { font-size: 16px; font-weight: 800; color: #111827; margin-bottom: 4px; }
+        .album-header-meta { font-size: 11px; color: #6b7280; margin-bottom: 0; }
+        .play-all-btn { background: #7c3aed; color: white; border: none; padding: 6px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; }
+        .play-all-btn svg { width: 12px; height: 12px; fill: white; }
+        .header-chevron { width: 20px; height: 20px; fill: #9ca3af; transition: transform 0.3s ease; flex-shrink: 0; }
+        .album-group.expanded .header-chevron { transform: rotate(180deg); fill: #7c3aed; }
+        .song-list { display: none; flex-direction: column; gap: 4px; padding: 0 12px 12px 12px; }
+        .album-group.expanded .song-list { display: flex; }
+
+        .song-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 8px; 
+            border-radius: 12px; 
+            transition: background 0.2s ease; 
+            cursor: pointer;
+        }
+        .song-row:hover { background: #f9fafb; }
+        .song-row.active { background: #f5f3ff; }
+        .track-number { width: 20px; text-align: center; font-size: 12px; font-weight: 600; color: #9ca3af; }
+        .song-row.active .track-number { color: #7c3aed; }
+        .song-cover-small { width: 40px; height: 40px; border-radius: 8px; background: #e5e7eb; overflow: hidden; flex-shrink: 0; }
+        .song-cover-small img { width: 100%; height: 100%; object-fit: cover; }
+        .song-info { flex: 1; min-width: 0; }
+        .song-title { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-row.active .song-title { color: #7c3aed; }
+        .song-duration { font-size: 11px; color: #9ca3af; }
+        .song-actions { display: flex; align-items: center; gap: 4px; }
+
+        .play-btn-small { width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; transition: all 0.2s ease; }
+        .play-btn-small:hover { background: #7c3aed; }
+        .play-btn-small svg { width: 12px; height: 12px; fill: #7c3aed; margin-left: 2px; }
+        .play-btn-small:hover svg { fill: white; }
+        .song-row.active .play-btn-small { background: #7c3aed; }
+        .song-row.active .play-btn-small svg { fill: white; }
+
+        .dots-btn-small { background: none; border: none; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        .dots-btn-small:hover { background: #e5e7eb; }
+        .dots-btn-small svg { width: 16px; height: 16px; }
+
+        .empty-state { text-align: center; padding: 50px 20px; color: #9ca3af; font-size: 14px; }
+
+        .alphabet-sidebar { position: absolute; right: 8px; top: 60px; bottom: 90px; width: 20px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; z-index: 10; }
+        .alphabet-letter { font-size: 10px; font-weight: 700; color: #9ca3af; cursor: pointer; line-height: 1; transition: all 0.2s ease; user-select: none; }
+        .alphabet-letter:hover { color: #7c3aed; transform: scale(1.6); font-weight: 800; }
+
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 70px; background: white; border-top: 1px solid #f3f4f6; display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 5px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; color: #9ca3af; transition: color 0.2s; flex: 1; }
+        .nav-item.active { color: #7c3aed; }
+        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
+        .nav-item span { font-size: 10px; font-weight: 600; }
+
+        @media (max-width: 480px) { .app-container { height: 100vh; max-width: 100%; border-radius: 0; } }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <div class="menu-overlay" id="menuOverlay"></div>
+
+        <div class="side-menu" id="sideMenu">
+            <div class="menu-header">
+                <div class="menu-user-info">
+                    <img src="https://i.pravatar.cc/80?img=12" alt="User Profile">
+                    <div class="menu-user-details">
+                        <h3>John Doe</h3>
+                        <p>john.doe@blackleo.com</p>
+                    </div>
+                </div>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item active">
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    My Profile
+                </div>
+                <div class="menu-item">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Settings
+                </div>
+                <div class="menu-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+                    Help & Support
+                </div>
+                <div class="menu-item logout">
+                    <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    Log Out
+                </div>
+            </div>
+        </div>
+
+        <button class="menu-toggle" id="menuToggle" aria-label="Open Menu">
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        </button>
+
+        <div class="user-profile" title="View Profile">
+            <img src="https://i.pravatar.cc/80?img=12" alt="User Profile">
+        </div>
+
+        <div class="banner-section">
+            <div class="search-container">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <input type="text" id="searchInput" placeholder="Search songs, artists, albums...">
+                <button class="clear-search" id="clearSearch">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+
+            <div class="cards-container">
+                <div class="category-card">
+                    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    <span>Favorites</span>
+                </div>
+                <div class="category-card">
+                    <svg viewBox="0 0 24 24"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>
+                    <span>Playlists</span>
+                </div>
+                <div class="category-card">
+                    <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <span>Recent</span>
+                </div>
+                <div class="category-card add-card">
+                    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                    <span>Add New</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="body-section">
+            <div class="filter-bar" id="filterBar">
+                <button class="filter-btn active" data-target="all">All</button>
+                <button class="filter-btn" data-target="artist">Artist</button>
+                <button class="filter-btn" data-target="album">Album</button>
+                <button class="filter-btn" data-target="albums">Albums</button>
+                <button class="filter-btn" data-target="folders">Folders</button>
+            </div>
+
+            <div class="search-results" id="searchResults"></div>
+
+            <div id="view-all" class="tab-content active">
+                <div class="song-list" style="display: flex; padding: 0;">
+                    <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Blinding Lights</div><div class="song-duration">3:20</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Save Your Tears</div><div class="song-duration">3:35</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">In Your Eyes</div><div class="song-duration">3:57</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="song-row"><div class="track-number">4</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Heartless</div><div class="song-duration">3:18</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="song-row"><div class="track-number">5</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">After Hours</div><div class="song-duration">6:01</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="song-row"><div class="track-number">6</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Faith</div><div class="song-duration">4:43</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                </div>
+            </div>
+
+            <div id="view-artist" class="tab-content">
+                <div class="artist-container">
+                    <div class="artist-row"><div class="artist-avatar"><img src="https://images.unsplash.com/photo-1520333789090-1afc82db536a?w=100&h=100&fit=crop" alt="Artist"></div><div class="artist-info"><div class="artist-name">The Weeknd</div><div class="artist-meta">R&B • 5 Songs</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="artist-row"><div class="artist-avatar"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Artist"></div><div class="artist-info"><div class="artist-name">Dua Lipa</div><div class="artist-meta">Pop • 7 Songs</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="artist-row"><div class="artist-avatar"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" alt="Artist"></div><div class="artist-info"><div class="artist-name">Taylor Swift</div><div class="artist-meta">Pop • 4 Songs</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="artist-row"><div class="artist-avatar"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop" alt="Artist"></div><div class="artist-info"><div class="artist-name">SZA</div><div class="artist-meta">R&B • 3 Songs</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                    <div class="artist-row"><div class="artist-avatar"><img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop" alt="Artist"></div><div class="artist-info"><div class="artist-name">Harry Styles</div><div class="artist-meta">Pop • 2 Songs</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                </div>
+            </div>
+
+            <div id="view-album" class="tab-content">
+                <div class="albums-container">
+                    <div class="album-group">
+                        <div class="album-header">
+                            <div class="album-cover-large"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=200&h=200&fit=crop" alt="Album Cover"></div>
+                            <div class="album-header-info"><div class="album-header-title">Neon Nights</div><div class="album-header-meta">The Weeknd • 2020 • 6 Songs</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div>
+                            <svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </div>
+                        <div class="song-list">
+                            <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Blinding Lights</div><div class="song-duration">3:20</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Save Your Tears</div><div class="song-duration">3:35</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">In Your Eyes</div><div class="song-duration">3:57</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">4</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Heartless</div><div class="song-duration">3:18</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">5</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">After Hours</div><div class="song-duration">6:01</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">6</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Faith</div><div class="song-duration">4:43</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-albums" class="tab-content">
+                <div class="albums-container">
+                    <div class="album-group">
+                        <div class="album-header">
+                            <div class="album-cover-large"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=200&h=200&fit=crop" alt="Album Cover"></div>
+                            <div class="album-header-info"><div class="album-header-title">Neon Nights</div><div class="album-header-meta">The Weeknd • 2020 • 5 Songs</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div>
+                            <svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </div>
+                        <div class="song-list">
+                            <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Blinding Lights</div><div class="song-duration">3:20</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Save Your Tears</div><div class="song-duration">3:35</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">In Your Eyes</div><div class="song-duration">3:57</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">4</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Heartless</div><div class="song-duration">3:18</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">5</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">After Hours</div><div class="song-duration">6:01</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                        </div>
+                    </div>
+                    <div class="album-group">
+                        <div class="album-header">
+                            <div class="album-cover-large"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=200&h=200&fit=crop" alt="Album Cover"></div>
+                            <div class="album-header-info"><div class="album-header-title">Future Nostalgia</div><div class="album-header-meta">Dua Lipa • 2020 • 7 Songs</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div>
+                            <svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </div>
+                        <div class="song-list">
+                            <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Don't Start Now</div><div class="song-duration">3:03</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Physical</div><div class="song-duration">3:13</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Levitating</div><div class="song-duration">3:23</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">4</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Pretty Please</div><div class="song-duration">3:15</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">5</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Hallucinate</div><div class="song-duration">3:28</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">6</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Love Again</div><div class="song-duration">4:18</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">7</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Break My Heart</div><div class="song-duration">3:41</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                        </div>
+                    </div>
+                    <div class="album-group">
+                        <div class="album-header">
+                            <div class="album-cover-large"><img src="https://images.unsplash.com/photo-1516575150278-77136aed6920?w=200&h=200&fit=crop" alt="Album Cover"></div>
+                            <div class="album-header-info"><div class="album-header-title">Midnights</div><div class="album-header-meta">Taylor Swift • 2022 • 4 Songs</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div>
+                            <svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </div>
+                        <div class="song-list">
+                            <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Anti-Hero</div><div class="song-duration">3:20</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Lavender Haze</div><div class="song-duration">3:22</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Midnight Rain</div><div class="song-duration">2:54</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">4</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Snow On The Beach</div><div class="song-duration">4:16</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                        </div>
+                    </div>
+                    <div class="album-group">
+                        <div class="album-header">
+                            <div class="album-cover-large"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=200&h=200&fit=crop" alt="Album Cover"></div>
+                            <div class="album-header-info"><div class="album-header-title">SOS</div><div class="album-header-meta">SZA • 2022 • 3 Songs</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div>
+                            <svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
+                        </div>
+                        <div class="song-list">
+                            <div class="song-row"><div class="track-number">1</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Kill Bill</div><div class="song-duration">2:33</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">2</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">Good Days</div><div class="song-duration">4:39</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                            <div class="song-row"><div class="track-number">3</div><div class="song-cover-small"><img src="https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop" alt="Cover"></div><div class="song-info"><div class="song-title">I Hate U</div><div class="song-duration">2:38</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-folders" class="tab-content">
+                <div class="empty-state">Folders View</div>
+            </div>
+
+            <div class="alphabet-sidebar" id="alphabetSidebar"></div>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item active" data-nav="home">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Home</span>
+            </div>
+            <div class="nav-item" data-nav="search">
+                <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <span>Search</span>
+            </div>
+            <div class="nav-item" data-nav="library">
+                <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+                <span>Library</span>
+            </div>
+            <div class="nav-item" data-nav="profile">
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Profile</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const filterBar = document.getElementById('filterBar');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tabContents.forEach(content => content.classList.remove('active'));
+                const targetId = 'view-' + btn.getAttribute('data-target');
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) targetContent.classList.add('active');
+            });
+        });
+
+        const albumHeaders = document.querySelectorAll('.album-header');
+        albumHeaders.forEach(header => {
+            header.addEventListener('click', function(e) {
+                if (e.target.closest('.play-all-btn')) return;
+                this.closest('.album-group').classList.toggle('expanded');
+            });
+        });
+
+        const alphabetSidebar = document.getElementById('alphabetSidebar');
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        letters.forEach(letter => {
+            const span = document.createElement('span');
+            span.textContent = letter;
+            span.className = 'alphabet-letter';
+            alphabetSidebar.appendChild(span);
+        });
+
+        const navItems = document.querySelectorAll('.nav-item');
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                if(item.getAttribute('data-nav') === 'search') {
+                    document.getElementById('searchInput').focus();
+                }
+            });
+        });
+
+        const menuToggle = document.getElementById('menuToggle');
+        const sideMenu = document.getElementById('sideMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+
+        function toggleMenu() {
+            sideMenu.classList.toggle('open');
+            menuOverlay.classList.toggle('open');
+        }
+
+        menuToggle.addEventListener('click', toggleMenu);
+        menuOverlay.addEventListener('click', toggleMenu);
+
+        // --- Connect Songs to Music Player ---
+        const masterSongList = [
+            'Blinding Lights',
+            "Don't Start Now",
+            'Anti-Hero',
+            'Kill Bill',
+            'Save Your Tears',
+            'Levitating'
+        ];
+
+        const songRows = document.querySelectorAll('.song-row');
+        const playBtns = document.querySelectorAll('.play-btn-small');
+
+        function openPlayer(songTitle) {
+            let index = masterSongList.indexOf(songTitle);
+            if (index === -1) index = 0;
+            window.location.href = `music-player.html?index=${index}`;
+        }
+
+        songRows.forEach(row => {
+            row.addEventListener('click', (e) => {
+                if (e.target.closest('.dots-btn-small')) return;
+                const title = row.querySelector('.song-title').textContent;
+                openPlayer(title);
+            });
+        });
+
+        playBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const row = btn.closest('.song-row');
+                const title = row.querySelector('.song-title').textContent;
+                openPlayer(title);
+            });
+        });
+
+        const searchInput = document.getElementById('searchInput');
+        const clearSearch = document.getElementById('clearSearch');
+        const searchResults = document.getElementById('searchResults');
+
+        const songs = [
+            { title: 'Blinding Lights', artist: 'The Weeknd', duration: '3:20', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: 'Save Your Tears', artist: 'The Weeknd', duration: '3:35', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: 'In Your Eyes', artist: 'The Weeknd', duration: '3:57', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: 'Heartless', artist: 'The Weeknd', duration: '3:18', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: 'After Hours', artist: 'The Weeknd', duration: '6:01', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: 'Faith', artist: 'The Weeknd', duration: '4:43', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
+            { title: "Don't Start Now", artist: 'Dua Lipa', duration: '3:03', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Physical', artist: 'Dua Lipa', duration: '3:13', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Levitating', artist: 'Dua Lipa', duration: '3:23', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Anti-Hero', artist: 'Taylor Swift', duration: '3:20', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop' },
+            { title: 'Kill Bill', artist: 'SZA', duration: '2:33', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop' }
+        ];
+
+        const artists = [
+            { name: 'The Weeknd', genre: 'R&B', count: '5 Songs', avatar: 'https://images.unsplash.com/photo-1520333789090-1afc82db536a?w=100&h=100&fit=crop' },
+            { name: 'Dua Lipa', genre: 'Pop', count: '7 Songs', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop' },
+            { name: 'Taylor Swift', genre: 'Pop', count: '4 Songs', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop' },
+            { name: 'SZA', genre: 'R&B', count: '3 Songs', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop' },
+            { name: 'Harry Styles', genre: 'Pop', count: '2 Songs', avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&h=100&fit=crop' }
+        ];
+
+        const albums = [
+            { title: 'Neon Nights', artist: 'The Weeknd', year: '2020', count: '5 Songs', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=200&h=200&fit=crop' },
+            { title: 'Future Nostalgia', artist: 'Dua Lipa', year: '2020', count: '7 Songs', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=200&h=200&fit=crop' },
+            { title: 'Midnights', artist: 'Taylor Swift', year: '2022', count: '4 Songs', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=200&h=200&fit=crop' },
+            { title: 'SOS', artist: 'SZA', year: '2022', count: '3 Songs', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=200&h=200&fit=crop' }
+        ];
+
+        function createSongRow(song, index) {
+            return `<div class="song-row"><div class="track-number">${index + 1}</div><div class="song-cover-small"><img src="${song.cover}" alt="Cover"></div><div class="song-info"><div class="song-title">${song.title}</div><div class="song-duration">${song.artist} • ${song.duration}</div></div><div class="song-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>`;
+        }
+
+        function createArtistRow(artist) {
+            return `<div class="artist-row"><div class="artist-avatar"><img src="${artist.avatar}" alt="Artist"></div><div class="artist-info"><div class="artist-name">${artist.name}</div><div class="artist-meta">${artist.genre} • ${artist.count}</div></div><div class="artist-actions"><button class="play-btn-small"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button><button class="dots-btn-small"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="2" fill="#4B5563"/><circle cx="12" cy="12" r="2" fill="#4B5563"/><circle cx="12" cy="18" r="2" fill="#4B5563"/></svg></button></div></div>`;
+        }
+
+        function createAlbumRow(album) {
+            return `<div class="album-group"><div class="album-header"><div class="album-cover-large"><img src="${album.cover}" alt="Album Cover"></div><div class="album-header-info"><div class="album-header-title">${album.title}</div><div class="album-header-meta">${album.artist} • ${album.year} • ${album.count}</div><button class="play-all-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play All</button></div><svg class="header-chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg></div></div>`;
+        }
+
+        function performSearch(query) {
+            const searchTerm = query.toLowerCase().trim();
+            if (searchTerm === '') {
+                searchResults.classList.remove('active');
+                searchResults.innerHTML = '';
+                filterBar.style.display = 'flex';
+                tabContents.forEach(content => content.style.display = 'block');
+                return;
+            }
+
+            filterBar.style.display = 'none';
+            tabContents.forEach(content => content.style.display = 'none');
+            searchResults.classList.add('active');
+
+            const filteredSongs = songs.filter(song => song.title.toLowerCase().includes(searchTerm) || song.artist.toLowerCase().includes(searchTerm));
+            const filteredArtists = artists.filter(artist => artist.name.toLowerCase().includes(searchTerm));
+            const filteredAlbums = albums.filter(album => album.title.toLowerCase().includes(searchTerm) || album.artist.toLowerCase().includes(searchTerm));
+
+            let html = '';
+            if (filteredSongs.length > 0) { html += `<div class="search-section-title">Songs</div>`; filteredSongs.forEach((song, index) => { html += createSongRow(song, index); }); }
+            if (filteredArtists.length > 0) { html += `<div class="search-section-title">Artists</div>`; filteredArtists.forEach(artist => { html += createArtistRow(artist); }); }
+            if (filteredAlbums.length > 0) { html += `<div class="search-section-title">Albums</div>`; filteredAlbums.forEach(album => { html += createAlbumRow(album); }); }
+            if (html === '') { html = `<div class="no-results">No results found for "${query}"</div>`; }
+
+            searchResults.innerHTML = html;
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            performSearch(e.target.value);
+            clearSearch.classList.toggle('visible', e.target.value.length > 0);
+        });
+
+        clearSearch.addEventListener('click', () => {
+            searchInput.value = '';
+            clearSearch.classList.remove('visible');
+            performSearch('');
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
