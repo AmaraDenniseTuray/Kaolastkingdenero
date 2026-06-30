@@ -550,13 +550,32 @@
         menuToggle.addEventListener('click', toggleMenu);
         menuOverlay.addEventListener('click', toggleMenu);
 
+        // --- Complete Song List matching music-player.html ---
         const masterSongList = [
+            // All Tab / Album Tab (indices 0-5)
             'Blinding Lights',
-            "Don't Start Now",
-            'Anti-Hero',
-            'Kill Bill',
             'Save Your Tears',
-            'Levitating'
+            'In Your Eyes',
+            'Heartless',
+            'After Hours',
+            'Faith',
+            // Future Nostalgia (indices 6-12)
+            "Don't Start Now",
+            'Physical',
+            'Levitating',
+            'Pretty Please',
+            'Hallucinate',
+            'Love Again',
+            'Break My Heart',
+            // Midnights (indices 13-16)
+            'Anti-Hero',
+            'Lavender Haze',
+            'Midnight Rain',
+            'Snow On The Beach',
+            // SOS (indices 17-19)
+            'Kill Bill',
+            'Good Days',
+            'I Hate U'
         ];
 
         const songRows = document.querySelectorAll('.song-row');
