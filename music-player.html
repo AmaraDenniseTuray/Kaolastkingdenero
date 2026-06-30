@@ -718,7 +718,9 @@
     </div>
 
     <script>
+        // Complete song library matching ALL songs from ALL tabs
         const songLibrary = [
+            // All Tab / Album Tab (6 songs)
             {
                 title: 'Blinding Lights',
                 artist: 'The Weeknd',
@@ -727,39 +729,140 @@
                 audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
             },
             {
-                title: "Don't Start Now",
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                title: 'Save Your Tears',
+                artist: 'The Weeknd',
+                album: 'Neon Nights',
+                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
                 audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
             },
             {
-                title: 'Anti-Hero',
-                artist: 'Taylor Swift',
-                album: 'Midnights',
-                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
+                title: 'In Your Eyes',
+                artist: 'The Weeknd',
+                album: 'Neon Nights',
+                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
                 audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
             },
             {
-                title: 'Kill Bill',
-                artist: 'SZA',
-                album: 'SOS',
-                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
+                title: 'Heartless',
+                artist: 'The Weeknd',
+                album: 'Neon Nights',
+                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
                 audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
             },
             {
-                title: 'Save Your Tears',
+                title: 'After Hours',
                 artist: 'The Weeknd',
                 album: 'Neon Nights',
                 cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
                 audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
             },
             {
+                title: 'Faith',
+                artist: 'The Weeknd',
+                album: 'Neon Nights',
+                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'
+            },
+            // Future Nostalgia Album (7 songs)
+            {
+                title: "Don't Start Now",
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3'
+            },
+            {
+                title: 'Physical',
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
+            },
+            {
                 title: 'Levitating',
                 artist: 'Dua Lipa',
                 album: 'Future Nostalgia',
                 cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3'
+            },
+            {
+                title: 'Pretty Please',
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3'
+            },
+            {
+                title: 'Hallucinate',
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3'
+            },
+            {
+                title: 'Love Again',
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3'
+            },
+            {
+                title: 'Break My Heart',
+                artist: 'Dua Lipa',
+                album: 'Future Nostalgia',
+                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3'
+            },
+            // Midnights Album (4 songs)
+            {
+                title: 'Anti-Hero',
+                artist: 'Taylor Swift',
+                album: 'Midnights',
+                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3'
+            },
+            {
+                title: 'Lavender Haze',
+                artist: 'Taylor Swift',
+                album: 'Midnights',
+                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3'
+            },
+            {
+                title: 'Midnight Rain',
+                artist: 'Taylor Swift',
+                album: 'Midnights',
+                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3'
+            },
+            {
+                title: 'Snow On The Beach',
+                artist: 'Taylor Swift',
+                album: 'Midnights',
+                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3'
+            },
+            // SOS Album (3 songs)
+            {
+                title: 'Kill Bill',
+                artist: 'SZA',
+                album: 'SOS',
+                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-18.mp3'
+            },
+            {
+                title: 'Good Days',
+                artist: 'SZA',
+                album: 'SOS',
+                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-19.mp3'
+            },
+            {
+                title: 'I Hate U',
+                artist: 'SZA',
+                album: 'SOS',
+                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
+                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-20.mp3'
             }
         ];
 
