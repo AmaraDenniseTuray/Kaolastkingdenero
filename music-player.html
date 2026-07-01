@@ -5,611 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Player - Black Leo</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
-
-        body {
-            background: #0a0a0a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .player-container {
-            width: 100%;
-            max-width: 400px;
-            height: 850px;
-            border-radius: 40px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            color: white;
-        }
-
-        .player-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop');
-            background-size: cover;
-            background-position: center;
-            filter: blur(40px) brightness(0.4);
-            transform: scale(1.2);
-            z-index: 0;
-            transition: background-image 0.5s ease;
-        }
-
-        .player-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, 
-                rgba(10,10,10,0.3) 0%, 
-                rgba(10,10,10,0.1) 40%, 
-                rgba(10,10,10,0.6) 100%);
-        }
-
-        .top-bar {
-            position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 25px 25px 15px 25px;
-        }
-
-        .back-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            text-decoration: none;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
-        }
-
-        .back-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .top-title {
-            font-size: 13px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .more-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .more-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .more-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .album-art-container {
-            position: relative;
-            z-index: 10;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: center;
-            flex: 1;
-            align-items: center;
-        }
-
-        .album-art {
-            width: 100%;
-            max-width: 320px;
-            aspect-ratio: 1;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            position: relative;
-            transition: transform 0.5s ease;
-        }
-
-        .album-art.playing {
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        .album-art img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: opacity 0.3s ease;
-        }
-
-        .album-art::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, 
-                rgba(255,255,255,0.1) 0%, 
-                transparent 50%, 
-                rgba(0,0,0,0.2) 100%);
-            pointer-events: none;
-        }
-
-        .song-info {
-            position: relative;
-            z-index: 10;
-            padding: 10px 30px 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .song-details {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .song-title {
-            font-size: 22px;
-            font-weight: 800;
-            margin-bottom: 6px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .song-artist {
-            font-size: 14px;
-            opacity: 0.7;
-            font-weight: 500;
-        }
-
-        .song-artist span {
-            opacity: 0.6;
-            font-size: 12px;
-        }
-
-        .like-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            margin-left: 15px;
-            flex-shrink: 0;
-        }
-
-        .like-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: none;
-            stroke: white;
-            stroke-width: 2;
-            transition: all 0.3s;
-        }
-
-        .like-btn.liked {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .like-btn.liked svg {
-            fill: #ef4444;
-            stroke: #ef4444;
-        }
-
-        .like-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .progress-section {
-            position: relative;
-            z-index: 10;
-            padding: 0 30px 20px 30px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 2px;
-            position: relative;
-            cursor: pointer;
-            transition: height 0.2s;
-        }
-
-        .progress-bar-container:hover {
-            height: 6px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
-            border-radius: 2px;
-            width: 0%;
-            position: relative;
-            transition: width 0.1s linear;
-        }
-
-        .progress-thumb {
-            position: absolute;
-            right: -7px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .progress-bar-container:hover .progress-thumb {
-            opacity: 1;
-        }
-
-        .time-display {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 11px;
-            opacity: 0.6;
-            font-weight: 500;
-        }
-
-        .controls {
-            position: relative;
-            z-index: 10;
-            padding: 10px 30px 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .control-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            color: white;
-        }
-
-        .control-btn svg {
-            fill: white;
-            transition: all 0.2s;
-        }
-
-        .control-btn:hover {
-            transform: scale(1.1);
-        }
-
-        .control-btn.small svg {
-            width: 22px;
-            height: 22px;
-            opacity: 0.7;
-        }
-
-        .control-btn.small.active svg {
-            opacity: 1;
-            fill: #7c3aed;
-        }
-
-        .control-btn.medium svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .play-pause-btn {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: white;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-        }
-
-        .play-pause-btn:hover {
-            transform: scale(1.08);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.4);
-        }
-
-        .play-pause-btn svg {
-            width: 28px;
-            height: 28px;
-            fill: #111827;
-            margin-left: 3px;
-        }
-
-        .play-pause-btn.playing svg {
-            margin-left: 0;
-        }
-
-        .extra-actions {
-            position: relative;
-            z-index: 10;
-            padding: 10px 30px 20px 30px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .action-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: white;
-            transition: all 0.2s;
-            padding: 10px;
-        }
-
-        .action-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: white;
-            opacity: 0.7;
-            transition: all 0.2s;
-        }
-
-        .action-btn span {
-            font-size: 10px;
-            opacity: 0.6;
-            font-weight: 500;
-        }
-
-        .action-btn:hover svg,
-        .action-btn.active svg {
-            opacity: 1;
-            fill: #7c3aed;
-        }
-
-        .action-btn.active span {
-            opacity: 1;
-            color: #7c3aed;
-        }
-
-        .mini-player {
-            position: relative;
-            z-index: 10;
-            margin: 0 20px 20px 20px;
-            padding: 12px 15px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .mini-player:hover {
-            background: rgba(255, 255, 255, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .mini-player-cover {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .mini-player-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease;
-        }
-
-        .mini-player-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .mini-player-label {
-            font-size: 10px;
-            opacity: 0.5;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 3px;
-        }
-
-        .mini-player-title {
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 2px;
-        }
-
-        .mini-player-artist {
-            font-size: 11px;
-            opacity: 0.6;
-        }
-
-        .mini-player-play {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s;
-        }
-
-        .mini-player-play:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
-        .mini-player-play svg {
-            width: 14px;
-            height: 14px;
-            fill: white;
-            margin-left: 2px;
-        }
-
-        .lyrics-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 100;
-            display: none;
-            flex-direction: column;
-            padding: 30px 25px;
-            overflow-y: auto;
-        }
-
-        .lyrics-overlay.show {
-            display: flex;
-        }
-
-        .lyrics-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .lyrics-title {
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            opacity: 0.7;
-        }
-
-        .lyrics-close {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .lyrics-close svg {
-            width: 18px;
-            height: 18px;
-            fill: white;
-        }
-
-        .lyrics-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .lyric-line {
-            font-size: 22px;
-            font-weight: 700;
-            opacity: 0.3;
-            transition: all 0.3s;
-            line-height: 1.4;
-        }
-
-        .lyric-line.active {
-            opacity: 1;
-            color: #7c3aed;
-            transform: scale(1.05);
-            transform-origin: left;
-        }
-
-        .lyric-line.passed {
-            opacity: 0.5;
-        }
-
-        @media (max-width: 480px) {
-            .player-container {
-                height: 100vh;
-                max-width: 100%;
-                border-radius: 0;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+        body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .player-container { width: 100%; max-width: 400px; height: 850px; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; display: flex; flex-direction: column; color: white; }
+        .player-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop'); background-size: cover; background-position: center; filter: blur(40px) brightness(0.4); transform: scale(1.2); z-index: 0; transition: background-image 0.5s ease; }
+        .player-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.1) 40%, rgba(10,10,10,0.6) 100%); }
+        .top-bar { position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 25px 25px 15px 25px; }
+        .back-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; text-decoration: none; }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.2); transform: scale(1.05); }
+        .back-btn svg { width: 20px; height: 20px; fill: white; }
+        .top-title { font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; opacity: 0.8; }
+        .more-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+        .more-btn:hover { background: rgba(255, 255, 255, 0.2); }
+        .more-btn svg { width: 20px; height: 20px; fill: white; }
+        .album-art-container { position: relative; z-index: 10; padding: 20px 30px; display: flex; justify-content: center; flex: 1; align-items: center; }
+        .album-art { width: 100%; max-width: 320px; aspect-ratio: 1; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; transition: transform 0.5s ease; }
+        .album-art.playing { animation: pulse 3s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        .album-art img { width: 100%; height: 100%; object-fit: cover; display: block; transition: opacity 0.3s ease; }
+        .album-art::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.2) 100%); pointer-events: none; }
+        .song-info { position: relative; z-index: 10; padding: 10px 30px 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .song-details { flex: 1; min-width: 0; }
+        .song-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .song-artist { font-size: 14px; opacity: 0.7; font-weight: 500; }
+        .song-artist span { opacity: 0.6; font-size: 12px; }
+        .like-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; margin-left: 15px; flex-shrink: 0; }
+        .like-btn svg { width: 22px; height: 22px; fill: none; stroke: white; stroke-width: 2; transition: all 0.3s; }
+        .like-btn.liked { background: rgba(239, 68, 68, 0.2); }
+        .like-btn.liked svg { fill: #ef4444; stroke: #ef4444; }
+        .like-btn:hover { transform: scale(1.1); }
+        .progress-section { position: relative; z-index: 10; padding: 0 30px 20px 30px; }
+        .progress-bar-container { width: 100%; height: 4px; background: rgba(255, 255, 255, 0.15); border-radius: 2px; position: relative; cursor: pointer; transition: height 0.2s; }
+        .progress-bar-container:hover { height: 6px; }
+        .progress-bar { height: 100%; background: linear-gradient(90deg, #4f46e5, #7c3aed); border-radius: 2px; width: 0%; position: relative; transition: width 0.1s linear; }
+        .progress-thumb { position: absolute; right: -7px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.3); opacity: 0; transition: opacity 0.2s; }
+        .progress-bar-container:hover .progress-thumb { opacity: 1; }
+        .time-display { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; opacity: 0.6; font-weight: 500; }
+        .controls { position: relative; z-index: 10; padding: 10px 30px 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .control-btn { background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; color: white; }
+        .control-btn svg { fill: white; transition: all 0.2s; }
+        .control-btn:hover { transform: scale(1.1); }
+        .control-btn.small svg { width: 22px; height: 22px; opacity: 0.7; }
+        .control-btn.small.active svg { opacity: 1; fill: #7c3aed; }
+        .control-btn.medium svg { width: 32px; height: 32px; }
+        .play-pause-btn { width: 70px; height: 70px; border-radius: 50%; background: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .play-pause-btn:hover { transform: scale(1.08); box-shadow: 0 12px 35px rgba(0,0,0,0.4); }
+        .play-pause-btn svg { width: 28px; height: 28px; fill: #111827; margin-left: 3px; }
+        .play-pause-btn.playing svg { margin-left: 0; }
+        .extra-actions { position: relative; z-index: 10; padding: 10px 30px 20px 30px; display: flex; justify-content: space-around; align-items: center; }
+        .action-btn { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: none; cursor: pointer; color: white; transition: all 0.2s; padding: 10px; }
+        .action-btn svg { width: 22px; height: 22px; fill: white; opacity: 0.7; transition: all 0.2s; }
+        .action-btn span { font-size: 10px; opacity: 0.6; font-weight: 500; }
+        .action-btn:hover svg, .action-btn.active svg { opacity: 1; fill: #7c3aed; }
+        .action-btn.active span { opacity: 1; color: #7c3aed; }
+        .mini-player { position: relative; z-index: 10; margin: 0 20px 20px 20px; padding: 12px 15px; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; }
+        .mini-player:hover { background: rgba(255, 255, 255, 0.12); transform: translateY(-2px); }
+        .mini-player-cover { width: 45px; height: 45px; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+        .mini-player-cover img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease; }
+        .mini-player-info { flex: 1; min-width: 0; }
+        .mini-player-label { font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+        .mini-player-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .mini-player-artist { font-size: 11px; opacity: 0.6; }
+        .mini-player-play { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+        .mini-player-play:hover { background: rgba(255, 255, 255, 0.25); }
+        .mini-player-play svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
+        .lyrics-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px); z-index: 100; display: none; flex-direction: column; padding: 30px 25px; overflow-y: auto; }
+        .lyrics-overlay.show { display: flex; }
+        .lyrics-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .lyrics-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; }
+        .lyrics-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .lyrics-close svg { width: 18px; height: 18px; fill: white; }
+        .lyrics-content { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+        .lyric-line { font-size: 22px; font-weight: 700; opacity: 0.3; transition: all 0.3s; line-height: 1.4; }
+        .lyric-line.active { opacity: 1; color: #7c3aed; transform: scale(1.05); transform-origin: left; }
+        .lyric-line.passed { opacity: 0.5; }
+        @media (max-width: 480px) { .player-container { height: 100vh; max-width: 100%; border-radius: 0; } }
     </style>
 </head>
 <body>
     <div class="player-container">
         <div class="player-bg" id="playerBg"></div>
-
         <div class="top-bar">
             <a href="sHome-page.html" class="back-btn">
                 <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
@@ -619,13 +94,11 @@
                 <svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
             </button>
         </div>
-
         <div class="album-art-container">
             <div class="album-art" id="albumArt">
                 <img src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop" alt="Album Cover" id="albumCover">
             </div>
         </div>
-
         <div class="song-info">
             <div class="song-details">
                 <div class="song-title" id="songTitle">Blinding Lights</div>
@@ -635,7 +108,6 @@
                 <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             </button>
         </div>
-
         <div class="progress-section">
             <div class="progress-bar-container" id="progressContainer">
                 <div class="progress-bar" id="progressBar">
@@ -647,7 +119,6 @@
                 <span id="totalTime">0:00</span>
             </div>
         </div>
-
         <div class="controls">
             <button class="control-btn small" id="shuffleBtn">
                 <svg viewBox="0 0 24 24"><path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/></svg>
@@ -665,7 +136,6 @@
                 <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
             </button>
         </div>
-
         <div class="extra-actions">
             <button class="action-btn" id="lyricsBtn">
                 <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
@@ -684,21 +154,19 @@
                 <span>Radio</span>
             </button>
         </div>
-
         <div class="mini-player" id="miniPlayer">
             <div class="mini-player-cover">
                 <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Next" id="nextCover">
             </div>
             <div class="mini-player-info">
                 <div class="mini-player-label">Up Next</div>
-                <div class="mini-player-title" id="nextTitle">Don't Start Now</div>
-                <div class="mini-player-artist" id="nextArtist">Dua Lipa</div>
+                <div class="mini-player-title" id="nextTitle">Save Your Tears</div>
+                <div class="mini-player-artist" id="nextArtist">The Weeknd</div>
             </div>
             <button class="mini-player-play" id="nextPlayBtn">
                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
         </div>
-
         <div class="lyrics-overlay" id="lyricsOverlay">
             <div class="lyrics-header">
                 <div class="lyrics-title">Lyrics</div>
@@ -713,157 +181,45 @@
                 <div class="lyric-line">Let the music take you away</div>
             </div>
         </div>
-
         <audio id="audioPlayer" preload="auto"></audio>
     </div>
 
     <script>
-        // Complete song library matching ALL songs from ALL tabs
+        // Complete song library - 29 songs total
         const songLibrary = [
-            // All Tab / Album Tab (6 songs)
-            {
-                title: 'Blinding Lights',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'
-            },
-            {
-                title: 'Save Your Tears',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3'
-            },
-            {
-                title: 'In Your Eyes',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-            },
-            {
-                title: 'Heartless',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
-            },
-            {
-                title: 'After Hours',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
-            },
-            {
-                title: 'Faith',
-                artist: 'The Weeknd',
-                album: 'Neon Nights',
-                cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'
-            },
-            // Future Nostalgia Album (7 songs)
-            {
-                title: "Don't Start Now",
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3'
-            },
-            {
-                title: 'Physical',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'
-            },
-            {
-                title: 'Levitating',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3'
-            },
-            {
-                title: 'Pretty Please',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3'
-            },
-            {
-                title: 'Hallucinate',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3'
-            },
-            {
-                title: 'Love Again',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3'
-            },
-            {
-                title: 'Break My Heart',
-                artist: 'Dua Lipa',
-                album: 'Future Nostalgia',
-                cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3'
-            },
-            // Midnights Album (4 songs)
-            {
-                title: 'Anti-Hero',
-                artist: 'Taylor Swift',
-                album: 'Midnights',
-                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3'
-            },
-            {
-                title: 'Lavender Haze',
-                artist: 'Taylor Swift',
-                album: 'Midnights',
-                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3'
-            },
-            {
-                title: 'Midnight Rain',
-                artist: 'Taylor Swift',
-                album: 'Midnights',
-                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3'
-            },
-            {
-                title: 'Snow On The Beach',
-                artist: 'Taylor Swift',
-                album: 'Midnights',
-                cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3'
-            },
-            // SOS Album (3 songs)
-            {
-                title: 'Kill Bill',
-                artist: 'SZA',
-                album: 'SOS',
-                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-18.mp3'
-            },
-            {
-                title: 'Good Days',
-                artist: 'SZA',
-                album: 'SOS',
-                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-19.mp3'
-            },
-            {
-                title: 'I Hate U',
-                artist: 'SZA',
-                album: 'SOS',
-                cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop',
-                audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-20.mp3'
-            }
+            // Neon Nights (15 songs)
+            { title: 'Blinding Lights', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+            { title: 'Save Your Tears', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
+            { title: 'In Your Eyes', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
+            { title: 'Heartless', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
+            { title: 'After Hours', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' },
+            { title: 'Faith', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3' },
+            { title: 'Starboy', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3' },
+            { title: 'The Hills', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
+            { title: "Can't Feel My Face", artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
+            { title: 'I Feel It Coming', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' },
+            { title: 'Die For You', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3' },
+            { title: 'Party Monster', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3' },
+            { title: 'Reminder', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3' },
+            { title: "Rockin'", artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3' },
+            { title: 'Secret', artist: 'The Weeknd', album: 'Neon Nights', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3' },
+            // Future Nostalgia (7 songs)
+            { title: "Don't Start Now", artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3' },
+            { title: 'Physical', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3' },
+            { title: 'Levitating', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-18.mp3' },
+            { title: 'Pretty Please', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-19.mp3' },
+            { title: 'Hallucinate', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-20.mp3' },
+            { title: 'Love Again', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-21.mp3' },
+            { title: 'Break My Heart', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-22.mp3' },
+            // Midnights (4 songs)
+            { title: 'Anti-Hero', artist: 'Taylor Swift', album: 'Midnights', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-23.mp3' },
+            { title: 'Lavender Haze', artist: 'Taylor Swift', album: 'Midnights', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-24.mp3' },
+            { title: 'Midnight Rain', artist: 'Taylor Swift', album: 'Midnights', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-25.mp3' },
+            { title: 'Snow On The Beach', artist: 'Taylor Swift', album: 'Midnights', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-26.mp3' },
+            // SOS (3 songs)
+            { title: 'Kill Bill', artist: 'SZA', album: 'SOS', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-27.mp3' },
+            { title: 'Good Days', artist: 'SZA', album: 'SOS', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-28.mp3' },
+            { title: 'I Hate U', artist: 'SZA', album: 'SOS', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-29.mp3' }
         ];
 
         let currentSongIndex = 0;
@@ -933,9 +289,7 @@
                 currentSongIndex = (currentSongIndex + 1) % songLibrary.length;
             }
             loadSong(currentSongIndex);
-            if (isPlaying) {
-                audioPlayer.play().catch(e => console.log('Playback failed:', e));
-            }
+            if (isPlaying) audioPlayer.play().catch(e => console.log('Playback failed:', e));
         }
 
         function prevSong() {
@@ -944,9 +298,7 @@
             } else {
                 currentSongIndex = (currentSongIndex - 1 + songLibrary.length) % songLibrary.length;
                 loadSong(currentSongIndex);
-                if (isPlaying) {
-                    audioPlayer.play().catch(e => console.log('Playback failed:', e));
-                }
+                if (isPlaying) audioPlayer.play().catch(e => console.log('Playback failed:', e));
             }
         }
 
@@ -986,9 +338,7 @@
         progressContainer.addEventListener('click', (e) => {
             const rect = progressContainer.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
-            if (audioPlayer.duration) {
-                audioPlayer.currentTime = percent * audioPlayer.duration;
-            }
+            if (audioPlayer.duration) audioPlayer.currentTime = percent * audioPlayer.duration;
         });
 
         playPauseBtn.addEventListener('click', togglePlayPause);
@@ -1010,24 +360,11 @@
             }
         });
 
-        likeBtn.addEventListener('click', () => {
-            likeBtn.classList.toggle('liked');
-        });
+        likeBtn.addEventListener('click', () => likeBtn.classList.toggle('liked'));
+        lyricsBtn.addEventListener('click', () => lyricsOverlay.classList.add('show'));
+        lyricsClose.addEventListener('click', () => lyricsOverlay.classList.remove('show'));
+        nextPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); nextSong(); });
 
-        lyricsBtn.addEventListener('click', () => {
-            lyricsOverlay.classList.add('show');
-        });
-
-        lyricsClose.addEventListener('click', () => {
-            lyricsOverlay.classList.remove('show');
-        });
-
-        nextPlayBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            nextSong();
-        });
-
-        // --- Initialize Song based on URL parameter ---
         const urlParams = new URLSearchParams(window.location.search);
         const startIndex = parseInt(urlParams.get('index'));
 
@@ -1044,9 +381,7 @@
                     playPauseIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
                     albumArt.classList.add('playing');
                     playPauseBtn.classList.add('playing');
-                }).catch(err => {
-                    console.log("Autoplay blocked by browser policy. User must click play.", err);
-                });
+                }).catch(err => console.log("Autoplay blocked by browser policy.", err));
             }, 300);
         }
     </script>
