@@ -638,6 +638,7 @@
         const clearSearch = document.getElementById('clearSearch');
         const searchResults = document.getElementById('searchResults');
 
+        // Updated to include all 29 songs for search functionality
         const songs = [
             { title: 'Blinding Lights', artist: 'The Weeknd', duration: '3:20', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
             { title: 'Save Your Tears', artist: 'The Weeknd', duration: '3:35', cover: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=100&h=100&fit=crop' },
@@ -657,8 +658,17 @@
             { title: "Don't Start Now", artist: 'Dua Lipa', duration: '3:03', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
             { title: 'Physical', artist: 'Dua Lipa', duration: '3:13', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
             { title: 'Levitating', artist: 'Dua Lipa', duration: '3:23', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Pretty Please', artist: 'Dua Lipa', duration: '3:15', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Hallucinate', artist: 'Dua Lipa', duration: '3:28', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Love Again', artist: 'Dua Lipa', duration: '4:18', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
+            { title: 'Break My Heart', artist: 'Dua Lipa', duration: '3:41', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop' },
             { title: 'Anti-Hero', artist: 'Taylor Swift', duration: '3:20', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop' },
-            { title: 'Kill Bill', artist: 'SZA', duration: '2:33', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop' }
+            { title: 'Lavender Haze', artist: 'Taylor Swift', duration: '3:22', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop' },
+            { title: 'Midnight Rain', artist: 'Taylor Swift', duration: '2:54', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop' },
+            { title: 'Snow On The Beach', artist: 'Taylor Swift', duration: '4:16', cover: 'https://images.unsplash.com/photo-1516575150278-77136aed6920?w=100&h=100&fit=crop' },
+            { title: 'Kill Bill', artist: 'SZA', duration: '2:33', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop' },
+            { title: 'Good Days', artist: 'SZA', duration: '4:39', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop' },
+            { title: 'I Hate U', artist: 'SZA', duration: '2:38', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=100&h=100&fit=crop' }
         ];
 
         const artists = [
