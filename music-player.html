@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
         body { background: #0a0a0a; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .player-container { width: 100%; max-width: 400px; height: 850px; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); position: relative; display: flex; flex-direction: column; color: white; }
-        .player-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop'); background-size: cover; background-position: center; filter: blur(40px) brightness(0.4); transform: scale(1.2); z-index: 0; transition: background-image 0.5s ease; }
+        .player-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('Heroes.jpg'); background-size: cover; background-position: center; filter: blur(40px) brightness(0.4); transform: scale(1.2); z-index: 0; transition: background-image 0.5s ease; }
         .player-bg::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(10,10,10,0.3) 0%, rgba(10,10,10,0.1) 40%, rgba(10,10,10,0.6) 100%); }
         .top-bar { position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: 25px 25px 15px 25px; }
         .back-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; text-decoration: none; }
@@ -96,7 +96,7 @@
         </div>
         <div class="album-art-container">
             <div class="album-art" id="albumArt">
-                <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop" alt="Album Cover" id="albumCover">
+                <img src="Heroes.jpg" alt="Album Cover" id="albumCover">
             </div>
         </div>
         <div class="song-info">
@@ -156,7 +156,7 @@
         </div>
         <div class="mini-player" id="miniPlayer">
             <div class="mini-player-cover">
-                <img src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=100&h=100&fit=crop" alt="Next" id="nextCover">
+                <img src="Heroes.jpg" alt="Next" id="nextCover">
             </div>
             <div class="mini-player-info">
                 <div class="mini-player-label">Up Next</div>
@@ -188,22 +188,21 @@
         // Complete song library - 29 songs total
         const songLibrary = [
             // Kao Denero (15 songs)
-            // NOTE: Replace 'YOUR_USERNAME' and 'YOUR_REPO' with your actual GitHub username and repository name!
-            { title: 'Intro Think About it', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/1%20Kao%20Denero%20Intro%20Think%20About%20it%20Prod%20by%20Bashbeatz.mp3' },
-            { title: 'Tonight', artist: 'Kao Denero feat. Keltony', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/2%20Kao%20Denero%20feat%20Keltony%20Tonight.mp3' },
-            { title: 'Ghetto Africa', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/3%20Kao%20Denero%20Ghetto%20Africa.mp3' },
-            { title: 'Coming to Amerikah', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/4%20Kao%20Denero%20Coming%20to%20Amerikah.mp3' },
-            { title: 'My Sound', artist: 'Kao Denero feat. NE2W', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/5%20Kao%20Denero%20feat%20NE2W%20My%20Sound.mp3' },
-            { title: 'Yo yo yo', artist: 'Kao Denero feat. K Man', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/6%20Kao%20Denero%20feat%20K%20Man%20Yo%20yo%20yo.mp3' },
-            { title: 'The Essence', artist: 'Kao Denero feat. Modenine', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/7%20Kao%20Denero%20feat%20Modenine%20The%20Essence.mp3' },
-            { title: 'Sheku', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/8%20Kao%20Denero%20Sheku.mp3' },
-            { title: 'Kill', artist: 'Kao Denero feat. Mus B', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/9%20Kao%20Denero%20feat%20Mus%20B%20Kill.mp3' },
-            { title: 'For Your Sake', artist: 'Kao Denero feat. Fine Face', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/10%20Kao%20Denero%20feat%20Fine%20Face%20For%20Your%20Sake.mp3' },
-            { title: 'Nak nor dae lef', artist: 'Kao Denero feat. Street Vibez', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/11%20Kao%20Denero%20feat%20Street%20Vibez%20Nak%20nor%20dae%20lef.mp3' },
-            { title: 'Chop Life', artist: 'Kao Denero feat. Stex', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/12%20Kao%20Denero%20feat%20Stex%20Chop%20Life.mp3' },
-            { title: 'Heroes', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/13%20Kao%20Denero%20Heroes.mp3' },
-            { title: 'Survive', artist: 'Kao Denero feat. Shattawale', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/14%20Kao%20Denero%20feat%20Shattawale%20Survive.mp3' },
-            { title: 'Strasser', artist: 'Kao Denero', album: 'Kao Denero', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/15%20Kao%20Denero%20Strasser.mp3' },
+            { title: 'Intro Think About it', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/1%20Kao%20Denero%20Intro%20Think%20About%20it%20Prod%20by%20Bashbeatz.mp3' },
+            { title: 'Tonight', artist: 'Kao Denero feat. Keltony', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/2%20Kao%20Denero%20feat%20Keltony%20Tonight.mp3' },
+            { title: 'Ghetto Africa', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/3%20Kao%20Denero%20Ghetto%20Africa.mp3' },
+            { title: 'Coming to Amerikah', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/4%20Kao%20Denero%20Coming%20to%20Amerikah.mp3' },
+            { title: 'My Sound', artist: 'Kao Denero feat. NE2W', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/5%20Kao%20Denero%20feat%20NE2W%20My%20Sound.mp3' },
+            { title: 'Yo yo yo', artist: 'Kao Denero feat. K Man', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/6%20Kao%20Denero%20feat%20K%20Man%20Yo%20yo%20yo.mp3' },
+            { title: 'The Essence', artist: 'Kao Denero feat. Modenine', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/7%20Kao%20Denero%20feat%20Modenine%20The%20Essence.mp3' },
+            { title: 'Sheku', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/8%20Kao%20Denero%20Sheku.mp3' },
+            { title: 'Kill', artist: 'Kao Denero feat. Mus B', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/9%20Kao%20Denero%20feat%20Mus%20B%20Kill.mp3' },
+            { title: 'For Your Sake', artist: 'Kao Denero feat. Fine Face', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/10%20Kao%20Denero%20feat%20Fine%20Face%20For%20Your%20Sake.mp3' },
+            { title: 'Nak nor dae lef', artist: 'Kao Denero feat. Street Vibez', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/11%20Kao%20Denero%20feat%20Street%20Vibez%20Nak%20nor%20dae%20lef.mp3' },
+            { title: 'Chop Life', artist: 'Kao Denero feat. Stex', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/12%20Kao%20Denero%20feat%20Stex%20Chop%20Life.mp3' },
+            { title: 'Heroes', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/13%20Kao%20Denero%20Heroes.mp3' },
+            { title: 'Survive', artist: 'Kao Denero feat. Shattawale', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/14%20Kao%20Denero%20feat%20Shattawale%20Survive.mp3' },
+            { title: 'Strasser', artist: 'Kao Denero', album: 'Kao Denero', cover: 'Heroes.jpg', audio: 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/15%20Kao%20Denero%20Strasser.mp3' },
             // Future Nostalgia (7 songs)
             { title: "Don't Start Now", artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3' },
             { title: 'Physical', artist: 'Dua Lipa', album: 'Future Nostalgia', cover: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3' },
