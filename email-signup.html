@@ -91,6 +91,16 @@
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
 
+        .input-field.valid {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .input-field.checking {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
         .error-message {
             font-size: 12px;
             color: #ef4444;
@@ -100,6 +110,25 @@
 
         .error-message.show {
             display: block;
+        }
+
+        .success-message {
+            font-size: 12px;
+            color: #10b981;
+            margin-left: 4px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message svg {
+            width: 14px;
+            height: 14px;
+            fill: #10b981;
         }
 
         .continue-btn {
@@ -118,7 +147,7 @@
             margin-top: 10px;
         }
 
-        .continue-btn:hover {
+        .continue-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(0, 102, 255, 0.3);
         }
@@ -324,8 +353,44 @@
             display: inline-block;
         }
 
+        .spinner.dark {
+            border: 2px solid rgba(0, 102, 255, 0.2);
+            border-top-color: #0066FF;
+        }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        /* Validation Status Indicator */
+        .validation-status {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            margin-left: 4px;
+            margin-top: 2px;
+        }
+
+        .validation-status.show {
+            display: flex;
+        }
+
+        .validation-status.checking {
+            color: #f59e0b;
+        }
+
+        .validation-status.valid {
+            color: #10b981;
+        }
+
+        .validation-status.invalid {
+            color: #ef4444;
+        }
+
+        .validation-status .status-icon {
+            width: 14px;
+            height: 14px;
         }
 
         /* Success Modal Overlay */
@@ -422,7 +487,11 @@
             <div class="email-signup-content" id="mainContent">
                 <div class="input-group">
                     <label class="input-label" for="email">Email</label>
-                    <input type="email" id="email" class="input-field" placeholder="Email Address">
+                    <input type="email" id="email" class="input-field" placeholder="Email Address" autocomplete="email">
+                    <div class="validation-status" id="emailStatus">
+                        <span class="status-icon"></span>
+                        <span class="status-text"></span>
+                    </div>
                     <span class="error-message" id="emailError">Please enter a valid email address</span>
                 </div>
                 
@@ -468,7 +537,11 @@
                 
                 <div class="input-group">
                     <label class="input-label" for="providerEmail">Email</label>
-                    <input type="email" id="providerEmail" class="input-field" placeholder="your@email.com">
+                    <input type="email" id="providerEmail" class="input-field" placeholder="your@email.com" autocomplete="email">
+                    <div class="validation-status" id="providerEmailStatus">
+                        <span class="status-icon"></span>
+                        <span class="status-text"></span>
+                    </div>
                     <span class="error-message" id="providerEmailError">Please enter a valid email address</span>
                 </div>
                 
@@ -541,6 +614,350 @@
                 'Facebook': `<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
             };
 
+            // ============================================
+            // ENHANCED EMAIL VALIDATION SYSTEM
+            // ============================================
+
+            // Strict email format regex (RFC 5322 compliant subset)
+            const EMAIL_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
+
+            // Known disposable/temporary email domains
+            const DISPOSABLE_DOMAINS = [
+                // Popular temporary email services
+                'tempmail.com', 'temp-mail.org', 'temp-mail.io', '10minutemail.com',
+                'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
+                'mailinator.com', 'maildrop.cc', 'yopmail.com', 'yopmail.fr',
+                'throwawaymail.com', 'trashmail.com', 'trashmail.net', 'trashmail.me',
+                'fakeinbox.com', 'sharklasers.com', 'guerrillamailblock.com',
+                'grr.la', 'dispostable.com', 'mailnesia.com', 'mailcatch.com',
+                'tempail.com', 'tempr.email', 'tempmailo.com', 'tempmailaddress.com',
+                'getairmail.com', 'mohmal.com', 'burnermail.io', 'emailondeck.com',
+                'incognitomail.com', 'incognitomail.net', 'incognitomail.org',
+                'minutemail.com', 'mailnator.com', 'disposableemailaddresses.emailmiser.com',
+                'getnada.com', 'maildrop.cc', 'harakirimail.com', 'jetable.org',
+                'mvrht.com', 'mailnull.com', 'spamgourmet.com', 'mytemp.email',
+                'tmail.ws', 'tmail.io', 'tmpmail.net', 'tmpmail.org',
+                'binkmail.com', 'bobmail.info', 'chammy.info', 'devnullmail.com',
+                'letthemeatspam.com', 'meltmail.com', 'spam4.me', 'spamavert.com',
+                'mailforspam.com', 'safetymail.info', 'filzmail.com', 'mailexpire.com',
+                'tempinbox.com', 'trashymail.com', 'wegwerfmail.de', 'wegwerfmail.net',
+                'mailtemp.info', 'tempmail.demo', 'temporarymail.com', 'tempmailer.com',
+                'emailfake.com', 'crazymailing.com', 'discard.email', 'discardmail.com',
+                'discardmail.de', 'emailigo.de', 'emailfake.com', 'mailtemp.info',
+                'meltmail.com', 'mintemail.com', 'mt2015.com', 'mytemp.email',
+                'nobulk.com', 'nomail.xl.cx', 'nospam.ze.tc', 'owlpic.com',
+                'spamfree24.org', 'spam.la', 'ssoia.com', 'tempomail.fr',
+                'temporarily.de', 'temporarioemail.com.br', 'thankyou2010.com',
+                'trash-amil.com', 'trashmailer.com', 'trashymail.net', 'tyldd.com',
+                'uggsrock.com', 'wegwerfadresse.de', 'wh4f.org', 'yep.it',
+                'mail.cx', 'mail-temporaire.fr', 'mail.mezimages.net', 'mail.wtf',
+                'mailzilla.com', 'mailzilla.org', 'mbx.cc', 'moberl.com',
+                'neomailbox.com', 'nepwk.com', 'nervmich.net', 'nervtmich.net',
+                'netmails.com', 'netmails.net', 'no-spam.ws', 'nobulk.com',
+                'noclickemail.com', 'nogmailspam.info', 'oglerau.com', 'onlatedotcom.info',
+                'papermakers.com', 'pookmail.com', 'proxymail.eu', 'pwrma.com',
+                'rcpt.at', 'reallymymail.com', 'recode.me', 'regbypass.com',
+                'rppkn.com', 'rtrtr.com', 's0ny.net', 'safe-mail.net',
+                'safersignup.de', 'safetypost.de', 'sandelf.de', 'saynotospams.com',
+                'selfdestructingmail.com', 'sendfree.org', 'shiftmail.com', 'sibmail.com',
+                'skeefmail.com', 'slaskpost.se', 'slipry.net', 'smashmail.de',
+                'sogetthis.com', 'soodonims.com', 'spambox.us', 'spamcero.com',
+                'spamcon.org', 'spamcorptastic.com', 'spamcowboy.com', 'spamcowboy.net',
+                'spamcowboy.org', 'spamday.com', 'spamex.com', 'spamfighter.cf',
+                'spamfighter.ga', 'spamfighter.gq', 'spamfighter.ml', 'spamfighter.tk',
+                'spamfree24.com', 'spamfree24.de', 'spamfree24.eu', 'spamfree24.info',
+                'spamfree24.net', 'spamgoes.in', 'spamherelots.com', 'spamhereplease.com',
+                'spamhole.com', 'spamify.com', 'spaminator.de', 'spamkill.info',
+                'spaml.de', 'spammotel.com', 'spamobox.com', 'spamoff.de',
+                'spamslicer.com', 'spamspot.com', 'spamstack.net', 'spamthis.co.uk',
+                'spamthisplease.com', 'spamtrail.com', 'spamtroll.net', 'speed.1s.fr',
+                'suremail.info', 'tempalias.com', 'tempemail.biz', 'tempemail.co.za',
+                'tempemail.com', 'tempemail.net', 'tempinbox.co.uk', 'tempinbox.com',
+                'tempmail.co', 'tempmail.it', 'tempmail.us', 'tempmail2.com',
+                'tempmaildemo.com', 'tempmailer.com', 'tempmailer.de', 'tempomail.fr',
+                'temporarily.de', 'temporarioemail.com.br', 'temporaryemail.net',
+                'temporaryemail.us', 'temporaryforwarding.com', 'temporaryinbox.com',
+                'temporarymailaddress.com', 'thanksnospam.info', 'thankyou2010.com',
+                'throwawayemailaddress.com', 'tittbit.in', 'tmail.io', 'tmail.ws',
+                'tmailinator.com', 'tmpeml.com', 'tmpeml.info', 'tmpmail.net',
+                'tmpmail.org', 'toiea.com', 'tokenmail.de', 'tortenboxer.de',
+                'tradermail.info', 'trash-amil.com', 'trash-mail.at', 'trash-mail.com',
+                'trash-mail.de', 'trash-mail.gq', 'trash-mail.ml', 'trash2009.com',
+                'trash2010.com', 'trash2011.com', 'trashdevil.com', 'trashdevil.de',
+                'trashemail.de', 'trashinbox.com', 'trashmail.at', 'trashmail.com',
+                'trashmail.de', 'trashmail.me', 'trashmail.net', 'trashmail.org',
+                'trashmail.ws', 'trashmailer.com', 'trashymail.com', 'trashymail.net',
+                'trbvm.com', 'trialmail.de', 'trickmail.net', 'trillianstars.com',
+                'trungtamtoeic.com', 'tryalert.com', 'twinmail.de', 'twoweirdtricks.com',
+                'tyldd.com', 'uggsrock.com', 'umail.net', 'upliftnow.com',
+                'uplipht.com', 'uroid.com', 'us.af', 'venompen.com',
+                'veryrealemail.com', 'viditag.com', 'viewcastmedia.com', 'viewcastmedia.net',
+                'viewcastmedia.org', 'viralplays.com', 'vmail.me', 'vomoto.com',
+                'vorga.org', 'vsimcard.com', 'vubby.com', 'walala.org',
+                'walkmail.net', 'wasteland.rfc822.org', 'webemail.me', 'webm4il.info',
+                'webuser.in', 'wee.my', 'wegwerfmail.de', 'wegwerfmail.info',
+                'wegwerfmail.net', 'wegwerfmail.org', 'wetrainbayarea.com', 'wetrainbayarea.org',
+                'wh4f.org', 'whatiaas.com', 'whatpaas.com', 'whyspam.me',
+                'wilemail.com', 'willhackforfood.biz', 'willselfdestruct.com', 'wimsg.com',
+                'winemaven.info', 'wronghead.com', 'wuzup.net', 'wuzupmail.net',
+                'wwwnew.eu', 'xagloo.com', 'xemaps.com', 'xents.com',
+                'xjoi.com', 'xmaily.com', 'xoxy.net', 'yep.it',
+                'yogamaven.com', 'yomail.info', 'yopmail.com', 'yopmail.fr',
+                'yopmail.gq', 'yopmail.net', 'ypmail.webarnak.fr.eu.org', 'yuurok.com',
+                'zehnminutenmail.de', 'zippymail.info', 'zoaxe.com', 'zoemail.org',
+                'zoemail.net', '10mail.org', '33mail.com', 'mailpoet.com'
+            ];
+
+            // Common domain typos and their corrections
+            const DOMAIN_TYPOS = {
+                'gmial.com': 'gmail.com',
+                'gmal.com': 'gmail.com',
+                'gmaill.com': 'gmail.com',
+                'gmai.com': 'gmail.com',
+                'gamil.com': 'gmail.com',
+                'gnail.com': 'gmail.com',
+                'gmail.co': 'gmail.com',
+                'gmail.cm': 'gmail.com',
+                'gmail.om': 'gmail.com',
+                'gmailcom': 'gmail.com',
+                'gmaul.com': 'gmail.com',
+                'gmaiil.com': 'gmail.com',
+                'gmil.com': 'gmail.com',
+                'yahooo.com': 'yahoo.com',
+                'yaho.com': 'yahoo.com',
+                'yahoo.co': 'yahoo.com',
+                'yaoo.com': 'yahoo.com',
+                'yhoo.com': 'yahoo.com',
+                'yahooo.co': 'yahoo.com',
+                'hotmal.com': 'hotmail.com',
+                'hotmial.com': 'hotmail.com',
+                'hotmai.com': 'hotmail.com',
+                'hotamil.com': 'hotmail.com',
+                'hotmaill.com': 'hotmail.com',
+                'hotmail.co': 'hotmail.com',
+                'hotmail.cm': 'hotmail.com',
+                'outloo.com': 'outlook.com',
+                'outlok.com': 'outlook.com',
+                'outllook.com': 'outlook.com',
+                'outlookcom': 'outlook.com',
+                'outlook.co': 'outlook.com',
+                'iclod.com': 'icloud.com',
+                'icloud.co': 'icloud.com',
+                'icoud.com': 'icloud.com',
+                'protonmal.com': 'protonmail.com',
+                'protonmail.co': 'protonmail.com',
+                'aol.co': 'aol.com'
+            };
+
+            // Known valid major email providers (for MX-like validation simulation)
+            const MAJOR_PROVIDERS = [
+                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+                'icloud.com', 'mac.com', 'me.com', 'live.com', 'msn.com',
+                'protonmail.com', 'pm.me', 'zoho.com', 'yandex.com', 'mail.com',
+                'gmx.com', 'gmx.net', 'fastmail.com', 'tutanota.com', 'hushmail.com',
+                'inbox.com', 'aim.com', 'cox.net', 'sbcglobal.net', 'bellsouth.net',
+                'verizon.net', 'comcast.net', 'att.net', 'earthlink.net', 'charter.net',
+                'yahoo.co.uk', 'yahoo.ca', 'yahoo.com.au', 'hotmail.co.uk',
+                'outlook.co.uk', 'live.co.uk', 'btinternet.com', 'virginmedia.com',
+                'blueyonder.co.uk', 'ntlworld.com', 'sky.com', 'talktalk.net',
+                'googlemail.com', 'proton.me', 'duck.com', 'hey.com',
+                'qq.com', '163.com', '126.com', 'sina.com', 'naver.com',
+                'rediffmail.com', 'ymail.com', 'rocketmail.com'
+            ];
+
+            // Cache for email validation results
+            const validationCache = {};
+
+            // Extract domain from email
+            function getDomain(email) {
+                const parts = email.split('@');
+                return parts.length === 2 ? parts[1].toLowerCase() : '';
+            }
+
+            // Check if email format is valid (strict)
+            function isValidEmailFormat(email) {
+                if (!email || typeof email !== 'string') return false;
+                
+                // Basic length checks
+                if (email.length < 6 || email.length > 254) return false;
+                
+                // No spaces allowed
+                if (/\s/.test(email)) return false;
+                
+                // No consecutive dots
+                if (/\.\./.test(email)) return false;
+                
+                // Must match strict regex
+                if (!EMAIL_REGEX.test(email)) return false;
+                
+                // Local part must be <= 64 characters
+                const localPart = email.split('@')[0];
+                if (localPart.length > 64) return false;
+                
+                // Domain labels must be <= 63 characters
+                const domain = email.split('@')[1];
+                const labels = domain.split('.');
+                for (const label of labels) {
+                    if (label.length > 63 || label.length === 0) return false;
+                }
+                
+                // TLD must be at least 2 characters and only letters
+                const tld = labels[labels.length - 1];
+                if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) return false;
+                
+                return true;
+            }
+
+            // Check if email uses a disposable domain
+            function isDisposableEmail(email) {
+                const domain = getDomain(email);
+                return DISPOSABLE_DOMAINS.includes(domain);
+            }
+
+            // Check for common domain typos and suggest correction
+            function checkDomainTypo(email) {
+                const domain = getDomain(email);
+                if (DOMAIN_TYPOS[domain]) {
+                    return DOMAIN_TYPOS[domain];
+                }
+                return null;
+            }
+
+            // Check if domain is a known major provider (simulates MX check)
+            function isKnownProvider(email) {
+                const domain = getDomain(email);
+                return MAJOR_PROVIDERS.includes(domain);
+            }
+
+            // Validate email using DNS-like check via free public API
+            // Uses a public email verification endpoint (no API key required)
+            async function verifyEmailWithAPI(email) {
+                try {
+                    // Using a free disposable email detection API
+                    const response = await fetch(`https://open.kickbox.com/v1/disposable/${getDomain(email)}`, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        // If disposable is true, email is not valid
+                        return { disposable: data.disposable };
+                    }
+                    return { disposable: false }; // Default to not disposable if API fails
+                } catch (error) {
+                    // Fallback to local check if API fails
+                    return { disposable: isDisposableEmail(email) };
+                }
+            }
+
+            // Comprehensive email validation
+            async function validateEmail(email) {
+                const result = {
+                    valid: false,
+                    format: false,
+                    disposable: false,
+                    typo: null,
+                    knownProvider: false,
+                    message: '',
+                    type: 'invalid' // 'invalid', 'warning', 'valid'
+                };
+
+                if (!email || email.trim() === '') {
+                    result.message = '';
+                    return result;
+                }
+
+                email = email.trim();
+
+                // Step 1: Format validation
+                if (!isValidEmailFormat(email)) {
+                    result.message = 'Please enter a valid email format';
+                    result.type = 'invalid';
+                    return result;
+                }
+                result.format = true;
+
+                // Step 2: Check for disposable email (local check first)
+                if (isDisposableEmail(email)) {
+                    result.disposable = true;
+                    result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                    result.type = 'invalid';
+                    return result;
+                }
+
+                // Step 3: Check for domain typos
+                const typo = checkDomainTypo(email);
+                if (typo) {
+                    result.typo = typo;
+                    result.message = `Did you mean ${email.split('@')[0]}@${typo}?`;
+                    result.type = 'warning';
+                    return result;
+                }
+
+                // Step 4: Check if known provider
+                result.knownProvider = isKnownProvider(email);
+
+                // Step 5: Verify with external API (disposable check)
+                try {
+                    const apiResult = await verifyEmailWithAPI(email);
+                    if (apiResult.disposable) {
+                        result.disposable = true;
+                        result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                        result.type = 'invalid';
+                        return result;
+                    }
+                } catch (e) {
+                    // API failed, continue with local validation
+                }
+
+                // All checks passed
+                result.valid = true;
+                if (result.knownProvider) {
+                    result.message = 'Valid email address';
+                } else {
+                    result.message = 'Valid email address';
+                }
+                result.type = 'valid';
+                return result;
+            }
+
+            // Update validation status UI
+            function updateValidationStatus(statusElement, inputElement, errorElement, result) {
+                const statusIcon = statusElement.querySelector('.status-icon');
+                const statusText = statusElement.querySelector('.status-text');
+
+                // Reset classes
+                inputElement.classList.remove('error', 'valid', 'checking');
+                statusElement.classList.remove('show', 'checking', 'valid', 'invalid');
+                if (errorElement) errorElement.classList.remove('show');
+
+                if (!result.message) {
+                    return;
+                }
+
+                statusElement.classList.add('show');
+                statusText.textContent = result.message;
+
+                if (result.type === 'valid') {
+                    statusElement.classList.add('valid');
+                    inputElement.classList.add('valid');
+                    statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
+                } else if (result.type === 'warning') {
+                    statusElement.classList.add('checking');
+                    inputElement.classList.add('checking');
+                    statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#f59e0b" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
+                } else {
+                    statusElement.classList.add('invalid');
+                    inputElement.classList.add('error');
+                    statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#ef4444" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
+                    if (errorElement) {
+                        errorElement.textContent = result.message;
+                        errorElement.classList.add('show');
+                    }
+                }
+            }
+
             // Show the appropriate provider form
             function showProviderForm(provider) {
                 mainContent.style.display = 'none';
@@ -552,8 +969,9 @@
                     document.getElementById('emailProviderTitle').textContent = `Continue with ${provider}`;
                     document.getElementById('emailProviderSubtitle').textContent = `Enter your ${provider} email to continue`;
                     document.getElementById('providerEmail').value = '';
-                    document.getElementById('providerEmail').classList.remove('error');
+                    document.getElementById('providerEmail').classList.remove('error', 'valid', 'checking');
                     document.getElementById('providerEmailError').classList.remove('show');
+                    document.getElementById('providerEmailStatus').classList.remove('show');
                     emailProviderForm.classList.add('active');
                     setTimeout(() => document.getElementById('providerEmail').focus(), 100);
                 } else if (provider === 'Facebook') {
@@ -575,11 +993,6 @@
                 mainContent.style.display = 'flex';
             }
 
-            // Email validation
-            function isValidEmail(email) {
-                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-            }
-
             // Show success and redirect
             function showSuccess(provider, userEmail) {
                 providerName.textContent = provider;
@@ -596,23 +1009,126 @@
                 }, 2000);
             }
 
+            // ============================================
+            // REAL-TIME EMAIL VALIDATION HANDLERS
+            // ============================================
+
+            // Debounce function for real-time validation
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+
+            // Main email real-time validation
+            const validateMainEmail = debounce(async (email) => {
+                const statusElement = document.getElementById('emailStatus');
+                const errorElement = document.getElementById('emailError');
+
+                if (!email || email.trim() === '') {
+                    emailInput.classList.remove('error', 'valid', 'checking');
+                    statusElement.classList.remove('show');
+                    errorElement.classList.remove('show');
+                    return;
+                }
+
+                // Show checking state
+                emailInput.classList.add('checking');
+                emailInput.classList.remove('error', 'valid');
+                statusElement.classList.add('show', 'checking');
+                statusElement.classList.remove('valid', 'invalid');
+                statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
+                statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+
+                const result = await validateEmail(email);
+                updateValidationStatus(statusElement, emailInput, errorElement, result);
+            }, 500);
+
+            // Provider email real-time validation
+            const validateProviderEmail = debounce(async (email) => {
+                const statusElement = document.getElementById('providerEmailStatus');
+                const errorElement = document.getElementById('providerEmailError');
+                const inputField = document.getElementById('providerEmail');
+
+                if (!email || email.trim() === '') {
+                    inputField.classList.remove('error', 'valid', 'checking');
+                    statusElement.classList.remove('show');
+                    errorElement.classList.remove('show');
+                    return;
+                }
+
+                // Show checking state
+                inputField.classList.add('checking');
+                inputField.classList.remove('error', 'valid');
+                statusElement.classList.add('show', 'checking');
+                statusElement.classList.remove('valid', 'invalid');
+                statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
+                statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+
+                const result = await validateEmail(email);
+                updateValidationStatus(statusElement, inputField, errorElement, result);
+            }, 500);
+
+            // Attach real-time validation to main email input
+            emailInput.addEventListener('input', (e) => {
+                validateMainEmail(e.target.value);
+            });
+
+            emailInput.addEventListener('blur', (e) => {
+                if (e.target.value.trim()) {
+                    validateMainEmail(e.target.value);
+                }
+            });
+
+            // Attach real-time validation to provider email input
+            document.getElementById('providerEmail').addEventListener('input', (e) => {
+                validateProviderEmail(e.target.value);
+            });
+
+            document.getElementById('providerEmail').addEventListener('blur', (e) => {
+                if (e.target.value.trim()) {
+                    validateProviderEmail(e.target.value);
+                }
+            });
+
             // Handle Google/Apple Continue button
-            document.getElementById('providerContinueBtn').addEventListener('click', () => {
+            document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
+                const statusElement = document.getElementById('providerEmailStatus');
                 const btn = document.getElementById('providerContinueBtn');
                 const email = emailField.value.trim();
                 const provider = document.getElementById('emailProviderTitle').textContent.replace('Continue with ', '');
 
-                emailField.classList.remove('error');
+                emailField.classList.remove('error', 'valid');
                 emailError.classList.remove('show');
+                statusElement.classList.remove('show');
 
-                if (!email || !isValidEmail(email)) {
+                if (!email) {
                     emailField.classList.add('error');
+                    emailError.textContent = 'Please enter your email address';
                     emailError.classList.add('show');
                     emailField.focus();
                     return;
                 }
+
+                // Validate email
+                const result = await validateEmail(email);
+                updateValidationStatus(statusElement, emailField, emailError, result);
+
+                if (result.type === 'invalid') {
+                    emailField.focus();
+                    return;
+                }
+
+                // If there's a typo warning, still allow but warn
+                // If valid or warning, proceed
 
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner"></span> Connecting...';
@@ -677,15 +1193,29 @@
 
             attachSocialHandlers();
 
-            // Main Continue button (email signup)
-            continueBtn.addEventListener('click', () => {
+            // Main Continue button (email signup) - with validation
+            continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
-                emailInput.classList.remove('error');
-                document.getElementById('emailError').classList.remove('show');
+                const emailError = document.getElementById('emailError');
+                const statusElement = document.getElementById('emailStatus');
 
-                if (!email || !isValidEmail(email)) {
+                emailInput.classList.remove('error', 'valid');
+                emailError.classList.remove('show');
+                statusElement.classList.remove('show');
+
+                if (!email) {
                     emailInput.classList.add('error');
-                    document.getElementById('emailError').classList.add('show');
+                    emailError.textContent = 'Please enter your email address';
+                    emailError.classList.add('show');
+                    emailInput.focus();
+                    return;
+                }
+
+                // Validate email comprehensively
+                const result = await validateEmail(email);
+                updateValidationStatus(statusElement, emailInput, emailError, result);
+
+                if (result.type === 'invalid') {
                     emailInput.focus();
                     return;
                 }
@@ -754,6 +1284,10 @@
 
             document.getElementById('fbUsername').addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') document.getElementById('fbPassword').focus();
+            });
+
+            emailInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') continueBtn.click();
             });
         });
     </script>
