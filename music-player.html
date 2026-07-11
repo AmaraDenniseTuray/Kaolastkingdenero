@@ -69,16 +69,70 @@
         .mini-player-play { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
         .mini-player-play:hover { background: rgba(255, 255, 255, 0.25); }
         .mini-player-play svg { width: 14px; height: 14px; fill: white; margin-left: 2px; }
-        .lyrics-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px); z-index: 100; display: none; flex-direction: column; padding: 30px 25px; overflow-y: auto; }
-        .lyrics-overlay.show { display: flex; }
-        .lyrics-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .lyrics-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; }
-        .lyrics-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .lyrics-close svg { width: 18px; height: 18px; fill: white; }
+        
+        /* Lyrics, Queue & Share Overlays */
+        .lyrics-overlay, .queue-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 10, 10, 0.97); backdrop-filter: blur(20px); z-index: 100; display: none; flex-direction: column; padding: 30px 25px; overflow-y: auto; }
+        .lyrics-overlay.show, .queue-overlay.show { display: flex; }
+        .lyrics-header, .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; }
+        .lyrics-title, .queue-title { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.7; }
+        .lyrics-close, .queue-close { width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .lyrics-close svg, .queue-close svg { width: 18px; height: 18px; fill: white; }
         .lyrics-content { flex: 1; display: flex; flex-direction: column; gap: 18px; }
         .lyric-line { font-size: 22px; font-weight: 700; opacity: 0.3; transition: all 0.3s; line-height: 1.4; }
         .lyric-line.active { opacity: 1; color: #7c3aed; transform: scale(1.05); transform-origin: left; }
         .lyric-line.passed { opacity: 0.5; }
+        .lyrics-song-info { font-size: 12px; opacity: 0.5; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .no-lyrics { text-align: center; padding: 40px 20px; opacity: 0.5; font-size: 14px; }
+        
+        /* Queue Styles */
+        .queue-content { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+        .queue-section-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; opacity: 0.5; margin: 15px 0 8px 0; }
+        .queue-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .queue-item:hover { background: rgba(255, 255, 255, 0.08); }
+        .queue-item.current { background: rgba(124, 58, 237, 0.15); }
+        .queue-item-number { width: 24px; font-size: 12px; opacity: 0.5; text-align: center; flex-shrink: 0; }
+        .queue-item.current .queue-item-number { color: #7c3aed; opacity: 1; }
+        .queue-item-cover { width: 40px; height: 40px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .queue-item-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .queue-item-info { flex: 1; min-width: 0; }
+        .queue-item-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .queue-item.current .queue-item-title { color: #7c3aed; }
+        .queue-item-artist { font-size: 11px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .queue-item-duration { font-size: 11px; opacity: 0.5; flex-shrink: 0; }
+        .queue-item.current .queue-item-duration { color: #7c3aed; }
+        .playing-indicator { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; margin-right: 4px; }
+        .playing-indicator span { display: block; width: 3px; background: #7c3aed; animation: playingBars 0.8s ease-in-out infinite; }
+        .playing-indicator span:nth-child(1) { height: 40%; animation-delay: 0s; }
+        .playing-indicator span:nth-child(2) { height: 80%; animation-delay: 0.2s; }
+        .playing-indicator span:nth-child(3) { height: 60%; animation-delay: 0.4s; }
+        @keyframes playingBars { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
+        
+        /* Share Modal */
+        .share-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(10px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .share-modal.show { display: flex; }
+        .share-modal-content { background: #1a1a1a; border-radius: 20px; padding: 25px; width: 100%; max-width: 320px; border: 1px solid rgba(255,255,255,0.1); }
+        .share-modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .share-modal-title { font-size: 16px; font-weight: 700; }
+        .share-modal-close { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .share-modal-close svg { width: 16px; height: 16px; fill: white; }
+        .share-song-info { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 20px; }
+        .share-song-cover { width: 50px; height: 50px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+        .share-song-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .share-song-details { flex: 1; min-width: 0; }
+        .share-song-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .share-song-artist { font-size: 12px; opacity: 0.6; }
+        .share-options { display: flex; flex-direction: column; gap: 8px; }
+        .share-option { display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(255,255,255,0.05); border: none; border-radius: 12px; color: white; cursor: pointer; transition: all 0.2s; font-size: 14px; font-weight: 500; text-align: left; width: 100%; }
+        .share-option:hover { background: rgba(255,255,255,0.1); transform: translateX(4px); }
+        .share-option svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .share-option.copy-link svg { fill: #7c3aed; }
+        .share-option.whatsapp svg { fill: #25D366; }
+        .share-option.facebook svg { fill: #1877F2; }
+        .share-option.twitter svg { fill: #1DA1F2; }
+        .share-option.native-share svg { fill: #f59e0b; }
+        .share-toast { position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200; }
+        .share-toast.show { opacity: 1; }
+        
         @media (max-width: 480px) { .player-container { height: 100vh; max-width: 100%; border-radius: 0; } }
     </style>
 </head>
@@ -141,11 +195,11 @@
                 <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
                 <span>Lyrics</span>
             </button>
-            <button class="action-btn">
+            <button class="action-btn" id="queueBtn">
                 <svg viewBox="0 0 24 24"><path d="M15 6H3v2h12V6zm0 4H3v2h12v-2zM3 16h8v-2H3v2zM17 6v8.18c-.31-.11-.65-.18-1-.18-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3V8h3V6h-5z"/></svg>
                 <span>Queue</span>
             </button>
-            <button class="action-btn">
+            <button class="action-btn" id="shareBtn">
                 <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                 <span>Share</span>
             </button>
@@ -167,6 +221,8 @@
                 <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
             </button>
         </div>
+        
+        <!-- Lyrics Overlay -->
         <div class="lyrics-overlay" id="lyricsOverlay">
             <div class="lyrics-header">
                 <div class="lyrics-title">Lyrics</div>
@@ -174,13 +230,67 @@
                     <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
                 </button>
             </div>
-            <div class="lyrics-content" id="lyricsContent">
-                <div class="lyric-line active">♪ Music is playing </div>
-                <div class="lyric-line">Enjoy the rhythm</div>
-                <div class="lyric-line">Feel the beat</div>
-                <div class="lyric-line">Let the music take you away</div>
+            <div class="lyrics-song-info" id="lyricsSongInfo"></div>
+            <div class="lyrics-content" id="lyricsContent"></div>
+        </div>
+        
+        <!-- Queue Overlay -->
+        <div class="queue-overlay" id="queueOverlay">
+            <div class="queue-header">
+                <div class="queue-title">Queue</div>
+                <button class="queue-close" id="queueClose">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                </button>
+            </div>
+            <div class="queue-content" id="queueContent"></div>
+        </div>
+        
+        <!-- Share Modal -->
+        <div class="share-modal" id="shareModal">
+            <div class="share-modal-content">
+                <div class="share-modal-header">
+                    <div class="share-modal-title">Share Song</div>
+                    <button class="share-modal-close" id="shareClose">
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                </div>
+                <div class="share-song-info" id="shareSongInfo">
+                    <div class="share-song-cover">
+                        <img id="shareCover" src="Heroes Album.jpg" alt="Cover">
+                    </div>
+                    <div class="share-song-details">
+                        <div class="share-song-title" id="shareTitle">Intro Think About it</div>
+                        <div class="share-song-artist" id="shareArtist">Kao Denero</div>
+                    </div>
+                </div>
+                <div class="share-options">
+                    <button class="share-option native-share" id="nativeShareBtn" style="display:none;">
+                        <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                        Share...
+                    </button>
+                    <button class="share-option copy-link" id="copyLinkBtn">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        Copy Link
+                    </button>
+                    <button class="share-option whatsapp" id="whatsappBtn">
+                        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        WhatsApp
+                    </button>
+                    <button class="share-option facebook" id="facebookBtn">
+                        <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        Facebook
+                    </button>
+                    <button class="share-option twitter" id="twitterBtn">
+                        <svg viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg>
+                        Twitter
+                    </button>
+                </div>
             </div>
         </div>
+        
+        <!-- Share Toast -->
+        <div class="share-toast" id="shareToast">Link copied to clipboard!</div>
+        
         <audio id="audioPlayer" preload="auto"></audio>
     </div>
 
@@ -222,6 +332,460 @@
             { title: 'I Hate U', artist: 'SZA', album: 'SOS', cover: 'https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?w=800&h=800&fit=crop', audio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-29.mp3' }
         ];
 
+        // ============================================
+        // LYRICS DATABASE - Generated for each song
+        // ============================================
+        const songLyrics = {
+            'Intro Think About it': [
+                '♪ Think about it, think about it',
+                'Every moment, every breath we take',
+                'Life is moving, never standing still',
+                'Got to think about it, think about it',
+                '',
+                'From the ghetto to the stars above',
+                'Every struggle made us who we are',
+                'Think about the journey we have come',
+                'Every battle fought beneath the sun',
+                '',
+                '♪ Think about it, think about it',
+                'Black Leo rising, never backing down',
+                'Think about it, think about it',
+                'Kao Denero, wearing the crown',
+                '',
+                'Sierra Leone to the world stage',
+                'Writing history on every page',
+                'Think about it, think about it',
+                'This is our time, this is our light'
+            ],
+            'Tonight': [
+                '♪ Tonight, tonight, tonight',
+                'We gon\' live it up tonight',
+                'Keltony and Kao, we taking flight',
+                'Everything gonna be alright',
+                '',
+                'City lights shining so bright',
+                'Music pumping through the night',
+                'Feel the rhythm, feel the beat',
+                'Dancing in the streets',
+                '',
+                '♪ Tonight is the night',
+                'Everything feels so right',
+                'No worries, no stress',
+                'Just vibes, nothing less',
+                '',
+                'Tonight, tonight, tonight',
+                'We gon\' make it take flight',
+                'From Freetown to the world',
+                'Our story is unfurled'
+            ],
+            'Ghetto Africa': [
+                '♪ Ghetto Africa, my motherland',
+                'Where the strong survive, where we stand',
+                'Dust and dreams beneath the sun',
+                'Our journey has just begun',
+                '',
+                'Mama said be strong my son',
+                'The battle is never done',
+                'But we rise, we rise again',
+                'Through the joy and through the pain',
+                '',
+                '♪ Ghetto Africa, we hear your call',
+                'Standing proud, standing tall',
+                'From the streets to the sky',
+                'We will never say die',
+                '',
+                'Black Leo, hear the sound',
+                'Africa, we homeward bound',
+                'Ghetto Africa, feel the pride',
+                'With our ancestors by our side'
+            ],
+            'Coming to Amerikah': [
+                '♪ Coming to Amerikah',
+                'With dreams bigger than the ocean',
+                'Leaving home, seeking fortune',
+                'But my heart stays in motion',
+                '',
+                'From the west coast of Africa',
+                'To the land of opportunity',
+                'Carrying my culture with me',
+                'Everywhere that I may be',
+                '',
+                '♪ Coming to Amerikah',
+                'But I never forget where I\'m from',
+                'Sierra Leone in my blood',
+                'Beating like a drum',
+                '',
+                'New world, new dreams, new life',
+                'But the struggle is still rife',
+                'Kao Denero tells the story',
+                'Of our glory, of our glory'
+            ],
+            'My Sound': [
+                '♪ This is my sound, my sound, my sound',
+                'Unique vibration, can\'t be found',
+                'NE2W and Kao, we set the tone',
+                'Making music on our own',
+                '',
+                'From the studio to the street',
+                'Feel the rhythm, feel the beat',
+                'Every lyric, every rhyme',
+                'Standing the test of time',
+                '',
+                '♪ My sound, my sound, my sound',
+                'Loud and clear, all around',
+                'Black Leo music empire',
+                'Taking it higher and higher',
+                '',
+                'This is my sound, hear me now',
+                'Taking my rightful crown',
+                'Sierra Leone to the globe',
+                'Part of the music tribe'
+            ],
+            'Yo yo yo': [
+                '♪ Yo yo yo, yo yo yo',
+                'K Man and Kao, run the show',
+                'Energy high, we never slow',
+                'Watch us go, watch us go',
+                '',
+                'Party jumping, crowd is moving',
+                'DJ spinning, keep it grooving',
+                'Yo yo yo, feel the flow',
+                'Let the good times roll',
+                '',
+                '♪ Yo yo yo, everybody',
+                'Sing it loud, sing it steady',
+                'From the east side to the west',
+                'Put the vibe to the test',
+                '',
+                'Yo yo yo, don\'t stop',
+                'Take it to the very top',
+                'Kao Denero, K Man too',
+                'Making moves, making moves for you'
+            ],
+            'The Essence': [
+                '♪ The essence, the essence of life',
+                'Modenine and Kao, cutting like a knife',
+                'Truth in the lyrics, fire in the soul',
+                'Making us whole, making us whole',
+                '',
+                'Search for the essence, search for the truth',
+                'Wisdom of the elders, fire of the youth',
+                'Every word we speak carries weight',
+                'Opening every gate',
+                '',
+                '♪ The essence, the essence',
+                'Pure and real, no pretense',
+                'African hip-hop at its finest',
+                'Every line we spin is the richest',
+                '',
+                'Modenine the lion, Kao the king',
+                'Together we make the whole world sing',
+                'The essence of what we do',
+                'Bringing something real to you'
+            ],
+            'Sheku': [
+                '♪ Sheku, Sheku, my brother',
+                'No one else can be another',
+                'Memories we made, they never fade',
+                'In my heart, you\'ll always stay',
+                '',
+                'From the playground to the stage',
+                'Turning over a new page',
+                'Sheku, I sing this for you',
+                'Everything I do, I do',
+                '',
+                '♪ Sheku, Sheku, hear my call',
+                'Through the good times and the fall',
+                'You\'re the reason I keep going',
+                'Seeds of love we\'re sowing',
+                '',
+                'For my brother Sheku, this one\'s for you',
+                'Every beat, every rhyme is true',
+                'Black Leo family, strong and tight',
+                'Shining through the darkest night'
+            ],
+            'Kill': [
+                '♪ Kill, kill, kill the beat',
+                'Mus B and Kao, can\'t be beat',
+                'Lyrics sharp like a sword',
+                'Every bar is a chord',
+                '',
+                'Kill the doubt, kill the fear',
+                'Kill the noise so we can hear',
+                'The sound of truth, the sound of power',
+                'Blooming like a flower',
+                '',
+                '♪ Kill, kill, kill the game',
+                'Nothing will ever be the same',
+                'African fire, burning bright',
+                'Lighting up the night',
+                '',
+                'Mus B the general, Kao the king',
+                'Together we make the whole world sing',
+                'Kill the limits, break the chains',
+                'Music flowing through our veins'
+            ],
+            'For Your Sake': [
+                '♪ For your sake, for your sake',
+                'Fine Face and Kao, no mistake',
+                'Every song we sing, every rhyme we write',
+                'Shining like the light',
+                '',
+                'For the ones who believe in us',
+                'For the ones we hold in trust',
+                'For the dreamers and the fighters',
+                'For the lovers and the writers',
+                '',
+                '♪ For your sake, we give it all',
+                'For your sake, we stand tall',
+                'Sierra Leone pride',
+                'With nothing to hide',
+                '',
+                'Fine Face bringing the melody',
+                'Kao Denero bringing the energy',
+                'For your sake, we never stop',
+                'Taking it to the top'
+            ],
+            'Nak nor dae lef': [
+                '♪ Nak nor dae lef, I no go lef',
+                'Street Vibez and Kao, we still here',
+                'Through the storm and through the rain',
+                'We will rise again',
+                '',
+                'Krio language, Krio soul',
+                'Making us feel whole',
+                'Freetown streets, we know them well',
+                'Got a story we must tell',
+                '',
+                '♪ Nak nor dae lef, I no go lef',
+                'My people, I no go lef',
+                'Sierra Leone, my home',
+                'I no go lef, I no go roam',
+                '',
+                'Street Vibez bringing the vibe',
+                'Kao Denero leading the tribe',
+                'Nak nor dae lef, hear me say',
+                'We here to stay, we here to stay'
+            ],
+            'Chop Life': [
+                '♪ Chop life, chop life well',
+                'Stex and Kao, we got the spell',
+                'Enjoy the moment, enjoy the day',
+                'Let the troubles go away',
+                '',
+                'Eat your food, drink your wine',
+                'Everything will be fine',
+                'Live your life, no regret',
+                'Best days are yet to come, you bet',
+                '',
+                '♪ Chop life, chop life well',
+                'Every story we have to tell',
+                'African joy, African grace',
+                'Smile upon your face',
+                '',
+                'Stex bringing the flavor',
+                'Kao Denero bringing the savior',
+                'Chop life well, my brother, my sister',
+                'Life is sweet, like the mister'
+            ],
+            'Heroes': [
+                '♪ Heroes, heroes all around',
+                'Standing on solid ground',
+                'Not the ones with capes and shields',
+                'But the ones in the fields',
+                '',
+                'Mama working day and night',
+                'Papa making things right',
+                'Teachers, doctors, farmers too',
+                'Heroes, me and you',
+                '',
+                '♪ Heroes, we are heroes',
+                'Every single one of us',
+                'Rising up, rising high',
+                'Reaching for the sky',
+                '',
+                'Black Leo salutes the brave',
+                'Every soul we try to save',
+                'Heroes walk among us still',
+                'Bending but never will we kill',
+                '',
+                '♪ Heroes, heroes, can you hear?',
+                'The sound of hope is drawing near',
+                'Kao Denero sings the song',
+                'Of heroes all along'
+            ],
+            'Survive': [
+                '♪ Survive, survive, survive',
+                'Shattawale and Kao, keeping alive',
+                'Through the fire, through the flood',
+                'African blood, African blood',
+                '',
+                'When the world is against you',
+                'And there\'s nothing you can do',
+                'Stand up tall, stand up strong',
+                'This is where you belong',
+                '',
+                '♪ Survive, survive, survive',
+                'Keep the dream alive',
+                'From Freetown to Accra',
+                'We will go far',
+                '',
+                'Shattawale the lion of Africa',
+                'Kao Denero, the voice of the people',
+                'Together we survive, together we thrive',
+                'Keeping the African dream alive'
+            ],
+            'Strasser': [
+                '♪ Strasser, Strasser, history calls',
+                'Echoes through the halls',
+                'Of power, of change, of revolution',
+                'Sierra Leone evolution',
+                '',
+                'Young soldiers with big dreams',
+                'Nothing is as it seems',
+                'Lessons learned, lessons taught',
+                'Every battle ever fought',
+                '',
+                '♪ Strasser, Strasser, hear the name',
+                'History will never be the same',
+                'From the barracks to the state',
+                'Sealing our nation\'s fate',
+                '',
+                'Kao Denero tells the tale',
+                'Of a nation on the trail',
+                'Strasser\'s story, our story too',
+                'Making something old feel new'
+            ],
+            "Don't Start Now": [
+                '♪ If you don\'t wanna see me',
+                'With somebody new baby',
+                'Don\'t start now',
+                'I found someone new',
+                '',
+                'You ain\'t the one you thought you were',
+                'Now I\'m dancing on my own',
+                'Feeling good, feeling free',
+                'This is where I need to be'
+            ],
+            'Physical': [
+                '♪ You got me feeling physical',
+                'When we dance, it\'s so typical',
+                'Moving bodies, moving souls',
+                'Losing all of our controls',
+                '',
+                'Future nostalgia, modern love',
+                'Dancing underneath the stars above'
+            ],
+            'Levitating': [
+                '♪ If you wanna run away with me',
+                'I know a galaxy',
+                'And I can take you for a ride',
+                'Levitating, levitating',
+                '',
+                'Sugarboo, honey, moonlight',
+                'Dancing in the disco light'
+            ],
+            'Pretty Please': [
+                '♪ Pretty please, pretty please',
+                'Loving you is all I need',
+                'Hold me close, don\'t let go',
+                'Let the feelings flow',
+                '',
+                'Future nostalgia, modern love',
+                'Dancing underneath the stars above'
+            ],
+            'Hallucinate': [
+                '♪ I feel the love, I feel it coming',
+                'Hallucinate, hallucinate',
+                'Dancing with my eyes closed',
+                'Falling into you',
+                '',
+                'Future nostalgia, modern love',
+                'Dancing underneath the stars above'
+            ],
+            'Love Again': [
+                '♪ I love again, I love again',
+                'Falling deep, falling in',
+                'Every time I see your face',
+                'I\'m lost in your embrace',
+                '',
+                'Future nostalgia, modern love',
+                'Dancing underneath the stars above'
+            ],
+            'Break My Heart': [
+                '♪ Did you break my heart? Well done',
+                'You said I was the one',
+                'But now I see the truth',
+                'Wasted all my youth',
+                '',
+                'Future nostalgia, modern love',
+                'Dancing underneath the stars above'
+            ],
+            'Anti-Hero': [
+                '♪ It\'s me, hi, I\'m the problem, it\'s me',
+                'At tea time, everybody agrees',
+                'I\'ll stare directly at the sun',
+                'But never in the mirror',
+                '',
+                'Midnight rain, midnight thoughts',
+                'Tangled in my own knots'
+            ],
+            'Lavender Haze': [
+                '♪ Stuck in this lavender haze',
+                'All I see is you',
+                'All I feel is you',
+                'In this purple view',
+                '',
+                'Midnight rain, midnight dreams',
+                'Nothing is as it seems'
+            ],
+            'Midnight Rain': [
+                '♪ Midnight rain, washing away',
+                'All the words I couldn\'t say',
+                'Falling down, falling deep',
+                'Secrets that I keep',
+                '',
+                'Midnight rain, midnight rain',
+                'Washing away the pain'
+            ],
+            'Snow On The Beach': [
+                '♪ Snow on the beach, snow on the beach',
+                'Weird but it\'s true, I\'m with you',
+                'Dreaming in the winter light',
+                'Everything feels right',
+                '',
+                'Midnight rain, midnight dreams',
+                'Nothing is as it seems'
+            ],
+            'Kill Bill': [
+                '♪ I might kill my ex',
+                'Not the best idea',
+                'But I can\'t help but feel',
+                'This pain is all too real',
+                '',
+                'Good days coming, good days coming',
+                'Healing is what we\'re running to'
+            ],
+            'Good Days': [
+                '♪ Good days, good days, coming my way',
+                'I can feel it, I can say',
+                'After all the pain and rain',
+                'Sunshine will remain',
+                '',
+                'Good days, good days, on the horizon',
+                'New beginnings, new rising'
+            ],
+            'I Hate U': [
+                '♪ I hate u, I hate u, I hate u',
+                'But I love u, I love u, I love u',
+                'Conflicted, I\'m conflicted',
+                'My heart is conflicted',
+                '',
+                'SOS, SOS, send the signal',
+                'Love is complicated, love is simple'
+            ]
+        };
+
         let currentSongIndex = 0;
         let isPlaying = false;
         let isShuffle = false;
@@ -248,6 +812,16 @@
         const lyricsOverlay = document.getElementById('lyricsOverlay');
         const lyricsClose = document.getElementById('lyricsClose');
         const nextPlayBtn = document.getElementById('nextPlayBtn');
+        
+        // New elements
+        const queueBtn = document.getElementById('queueBtn');
+        const queueOverlay = document.getElementById('queueOverlay');
+        const queueClose = document.getElementById('queueClose');
+        const queueContent = document.getElementById('queueContent');
+        const shareBtn = document.getElementById('shareBtn');
+        const shareModal = document.getElementById('shareModal');
+        const shareClose = document.getElementById('shareClose');
+        const shareToast = document.getElementById('shareToast');
 
         function loadSong(index) {
             const song = songLibrary[index];
@@ -265,6 +839,208 @@
             
             progressBar.style.width = '0%';
             currentTimeEl.textContent = '0:00';
+            
+            // Update lyrics when song changes
+            loadLyrics(song.title, song.artist);
+        }
+
+        // ============================================
+        // LYRICS SYSTEM
+        // ============================================
+        function loadLyrics(title, artist) {
+            const lyricsContent = document.getElementById('lyricsContent');
+            const lyricsSongInfo = document.getElementById('lyricsSongInfo');
+            
+            lyricsSongInfo.innerHTML = `<strong>${title}</strong> • ${artist}`;
+            
+            const lyrics = songLyrics[title];
+            
+            if (lyrics && lyrics.length > 0) {
+                lyricsContent.innerHTML = '';
+                lyrics.forEach((line, index) => {
+                    const lineEl = document.createElement('div');
+                    lineEl.className = 'lyric-line';
+                    lineEl.textContent = line || '♪';
+                    lineEl.dataset.index = index;
+                    lyricsContent.appendChild(lineEl);
+                });
+                
+                // Set first line as active
+                const firstLine = lyricsContent.querySelector('.lyric-line');
+                if (firstLine) firstLine.classList.add('active');
+            } else {
+                lyricsContent.innerHTML = `
+                    <div class="no-lyrics">
+                        <p>♪ Lyrics not available for this song ♪</p>
+                        <p style="margin-top: 10px; font-size: 12px;">Enjoy the music!</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Sync lyrics with audio playback
+        function syncLyrics() {
+            if (!audioPlayer.duration || !lyricsOverlay.classList.contains('show')) return;
+            
+            const lyricsLines = document.querySelectorAll('.lyric-line');
+            if (lyricsLines.length === 0) return;
+            
+            const progress = audioPlayer.currentTime / audioPlayer.duration;
+            const activeIndex = Math.floor(progress * lyricsLines.length);
+            
+            lyricsLines.forEach((line, index) => {
+                line.classList.remove('active', 'passed');
+                if (index < activeIndex) {
+                    line.classList.add('passed');
+                } else if (index === activeIndex) {
+                    line.classList.add('active');
+                    // Scroll to active line
+                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        }
+
+        // ============================================
+        // QUEUE SYSTEM
+        // ============================================
+        function loadQueue() {
+            queueContent.innerHTML = '';
+            
+            // Current song section
+            const currentSection = document.createElement('div');
+            currentSection.className = 'queue-section-title';
+            currentSection.textContent = 'Now Playing';
+            queueContent.appendChild(currentSection);
+            
+            const currentSong = songLibrary[currentSongIndex];
+            const currentItem = createQueueItem(currentSongIndex, currentSong, true);
+            queueContent.appendChild(currentItem);
+            
+            // Up next section
+            const nextSection = document.createElement('div');
+            nextSection.className = 'queue-section-title';
+            nextSection.textContent = 'Up Next';
+            queueContent.appendChild(nextSection);
+            
+            // Show next 10 songs
+            const songsToShow = Math.min(10, songLibrary.length - 1);
+            for (let i = 1; i <= songsToShow; i++) {
+                const songIndex = (currentSongIndex + i) % songLibrary.length;
+                const song = songLibrary[songIndex];
+                const item = createQueueItem(songIndex, song, false);
+                queueContent.appendChild(item);
+            }
+        }
+
+        function createQueueItem(index, song, isCurrent) {
+            const item = document.createElement('div');
+            item.className = 'queue-item' + (isCurrent ? ' current' : '');
+            item.dataset.index = index;
+            
+            const number = document.createElement('div');
+            number.className = 'queue-item-number';
+            if (isCurrent) {
+                number.innerHTML = '<div class="playing-indicator"><span></span><span></span><span></span></div>';
+            } else {
+                number.textContent = index + 1;
+            }
+            
+            const cover = document.createElement('div');
+            cover.className = 'queue-item-cover';
+            const coverImg = document.createElement('img');
+            coverImg.src = song.cover;
+            coverImg.alt = song.title;
+            cover.appendChild(coverImg);
+            
+            const info = document.createElement('div');
+            info.className = 'queue-item-info';
+            const title = document.createElement('div');
+            title.className = 'queue-item-title';
+            title.textContent = song.title;
+            const artist = document.createElement('div');
+            artist.className = 'queue-item-artist';
+            artist.textContent = song.artist;
+            info.appendChild(title);
+            info.appendChild(artist);
+            
+            item.appendChild(number);
+            item.appendChild(cover);
+            item.appendChild(info);
+            
+            // Click to jump to song
+            if (!isCurrent) {
+                item.addEventListener('click', () => {
+                    currentSongIndex = parseInt(item.dataset.index);
+                    loadSong(currentSongIndex);
+                    audioPlayer.play().catch(e => console.log('Playback failed:', e));
+                    isPlaying = true;
+                    playPauseIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                    albumArt.classList.add('playing');
+                    playPauseBtn.classList.add('playing');
+                    queueOverlay.classList.remove('show');
+                });
+            }
+            
+            return item;
+        }
+
+        // ============================================
+        // SHARE SYSTEM
+        // ============================================
+        function loadShareInfo() {
+            const song = songLibrary[currentSongIndex];
+            document.getElementById('shareCover').src = song.cover;
+            document.getElementById('shareTitle').textContent = song.title;
+            document.getElementById('shareArtist').textContent = song.artist;
+            
+            // Show native share button if supported
+            if (navigator.share) {
+                document.getElementById('nativeShareBtn').style.display = 'flex';
+            } else {
+                document.getElementById('nativeShareBtn').style.display = 'none';
+            }
+        }
+
+        function getShareUrl() {
+            const song = songLibrary[currentSongIndex];
+            const baseUrl = window.location.href.split('?')[0];
+            return `${baseUrl}?index=${currentSongIndex}`;
+        }
+
+        function getShareText() {
+            const song = songLibrary[currentSongIndex];
+            return `🎵 Listening to "${song.title}" by ${song.artist} on Black Leo Music!`;
+        }
+
+        function showToast(message) {
+            shareToast.textContent = message;
+            shareToast.classList.add('show');
+            setTimeout(() => {
+                shareToast.classList.remove('show');
+            }, 2000);
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    return true;
+                } catch (err) {
+                    document.body.removeChild(textArea);
+                    return false;
+                }
+            }
         }
 
         function togglePlayPause() {
@@ -314,6 +1090,7 @@
                 const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
                 progressBar.style.width = progress + '%';
                 currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+                syncLyrics();
             }
         });
 
@@ -361,8 +1138,77 @@
         });
 
         likeBtn.addEventListener('click', () => likeBtn.classList.toggle('liked'));
-        lyricsBtn.addEventListener('click', () => lyricsOverlay.classList.add('show'));
+        
+        // Lyrics button
+        lyricsBtn.addEventListener('click', () => {
+            loadLyrics(songLibrary[currentSongIndex].title, songLibrary[currentSongIndex].artist);
+            lyricsOverlay.classList.add('show');
+        });
         lyricsClose.addEventListener('click', () => lyricsOverlay.classList.remove('show'));
+        
+        // Queue button
+        queueBtn.addEventListener('click', () => {
+            loadQueue();
+            queueOverlay.classList.add('show');
+        });
+        queueClose.addEventListener('click', () => queueOverlay.classList.remove('show'));
+        
+        // Share button
+        shareBtn.addEventListener('click', () => {
+            loadShareInfo();
+            shareModal.classList.add('show');
+        });
+        shareClose.addEventListener('click', () => shareModal.classList.remove('show'));
+        shareModal.addEventListener('click', (e) => {
+            if (e.target === shareModal) shareModal.classList.remove('show');
+        });
+        
+        // Share options
+        document.getElementById('copyLinkBtn').addEventListener('click', async () => {
+            const url = getShareUrl();
+            const success = await copyToClipboard(url);
+            if (success) {
+                showToast('✓ Link copied to clipboard!');
+            } else {
+                showToast('✗ Failed to copy link');
+            }
+            shareModal.classList.remove('show');
+        });
+        
+        document.getElementById('whatsappBtn').addEventListener('click', () => {
+            const text = getShareText() + ' ' + getShareUrl();
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+            shareModal.classList.remove('show');
+        });
+        
+        document.getElementById('facebookBtn').addEventListener('click', () => {
+            const url = getShareUrl();
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+            shareModal.classList.remove('show');
+        });
+        
+        document.getElementById('twitterBtn').addEventListener('click', () => {
+            const text = getShareText();
+            const url = getShareUrl();
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+            shareModal.classList.remove('show');
+        });
+        
+        document.getElementById('nativeShareBtn').addEventListener('click', async () => {
+            try {
+                await navigator.share({
+                    title: songLibrary[currentSongIndex].title,
+                    text: getShareText(),
+                    url: getShareUrl()
+                });
+                shareModal.classList.remove('show');
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    showToast('Share cancelled');
+                }
+            }
+        });
+        
         nextPlayBtn.addEventListener('click', (e) => { e.stopPropagation(); nextSong(); });
 
         const urlParams = new URLSearchParams(window.location.search);
