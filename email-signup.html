@@ -623,12 +623,13 @@
             };
 
             // ============================================
-            // EMAIL VALIDATION SYSTEM
+            // INSTANT EMAIL VALIDATION SYSTEM
             // ============================================
 
             const EMAIL_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
 
-            const DISPOSABLE_DOMAINS = [
+            // Disposable/temporary email domains (instant check)
+            const DISPOSABLE_DOMAINS = new Set([
                 'tempmail.com', 'temp-mail.org', 'temp-mail.io', '10minutemail.com',
                 'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
                 'mailinator.com', 'maildrop.cc', 'yopmail.com', 'yopmail.fr',
@@ -684,8 +685,9 @@
                 'yopmail.gq', 'ypmail.webarnak.fr.eu.org', 'yuurok.com',
                 'zehnminutenmail.de', 'zippymail.info', 'zoaxe.com', 'zoemail.org',
                 'zoemail.net'
-            ];
+            ]);
 
+            // Domain typos (instant check)
             const DOMAIN_TYPOS = {
                 'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmaill.com': 'gmail.com',
                 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com',
@@ -701,7 +703,8 @@
                 'protonmal.com': 'protonmail.com', 'protonmail.co': 'protonmail.com', 'aol.co': 'aol.com'
             };
 
-            const MAJOR_PROVIDERS = [
+            // Known active major email providers (instant check - no network needed)
+            const MAJOR_PROVIDERS = new Set([
                 'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
                 'icloud.com', 'mac.com', 'me.com', 'live.com', 'msn.com',
                 'protonmail.com', 'pm.me', 'zoho.com', 'yandex.com', 'mail.com',
@@ -719,6 +722,15 @@
                 'yahoo.co.jp', 'hotmail.co.jp', 'docomo.ne.jp', 'softbank.jp',
                 'yahoo.com.br', 'hotmail.com.br', 'bol.com.br', 'uol.com.br',
                 'terra.com.br', 'ig.com.br', 'globomail.com'
+            ]);
+
+            // Suspicious patterns that indicate fake/inactive emails
+            const SUSPICIOUS_PATTERNS = [
+                /^test@/i, /^fake@/i, /^asdf@/i, /^qwerty@/i,
+                /^123@/i, /^abc@/i, /^user@/i, /^admin@/i,
+                /@test\./i, /@example\./i, /@localhost/i,
+                /@mail\.test$/i, /@domain\.com$/i, /@email\.com$/i,
+                /@temp\./i, /@dummy\./i, /@sample\./i
             ];
 
             function getDomain(email) {
@@ -726,6 +738,7 @@
                 return parts.length === 2 ? parts[1].toLowerCase() : '';
             }
 
+            // INSTANT format validation
             function isValidEmailFormat(email) {
                 if (!email || typeof email !== 'string') return false;
                 if (email.length < 6 || email.length > 254) return false;
@@ -748,34 +761,45 @@
                 return true;
             }
 
+            // INSTANT disposable check
             function isDisposableEmail(email) {
                 const domain = getDomain(email);
-                return DISPOSABLE_DOMAINS.includes(domain);
+                return DISPOSABLE_DOMAINS.has(domain);
             }
 
+            // INSTANT typo check
             function checkDomainTypo(email) {
                 const domain = getDomain(email);
                 return DOMAIN_TYPOS[domain] || null;
             }
 
+            // INSTANT known provider check
             function isKnownProvider(email) {
                 const domain = getDomain(email);
-                return MAJOR_PROVIDERS.includes(domain);
+                return MAJOR_PROVIDERS.has(domain);
+            }
+
+            // INSTANT suspicious pattern check
+            function isSuspiciousEmail(email) {
+                return SUSPICIOUS_PATTERNS.some(pattern => pattern.test(email));
             }
 
             // ============================================
-            // EMAIL VALIDATION - PRACTICAL APPROACH
+            // INSTANT EMAIL VALIDATION - NO NETWORK DELAYS
             // ============================================
-            async function validateEmail(email) {
+            function validateEmailInstant(email) {
                 const result = {
                     valid: false,
-                    format: false,
-                    disposable: false,
-                    typo: null,
-                    knownProvider: false,
                     isActive: false,
                     message: '',
-                    type: 'invalid'
+                    type: 'invalid',
+                    checks: {
+                        format: false,
+                        disposable: false,
+                        typo: null,
+                        knownProvider: false,
+                        suspicious: false
+                    }
                 };
 
                 if (!email || email.trim() === '') {
@@ -785,40 +809,45 @@
 
                 email = email.trim().toLowerCase();
 
-                // Step 1: Format validation
+                // Check 1: Format (INSTANT)
                 if (!isValidEmailFormat(email)) {
                     result.message = 'Please enter a valid email format';
                     result.type = 'invalid';
                     return result;
                 }
-                result.format = true;
+                result.checks.format = true;
 
                 const domain = getDomain(email);
 
-                // Step 2: Check for disposable email
+                // Check 2: Disposable (INSTANT)
                 if (isDisposableEmail(email)) {
-                    result.disposable = true;
+                    result.checks.disposable = true;
                     result.message = 'Disposable email addresses are not allowed. Please use a real email.';
                     result.type = 'invalid';
                     return result;
                 }
 
-                // Step 3: Check for domain typos
+                // Check 3: Typo (INSTANT)
                 const typo = checkDomainTypo(email);
                 if (typo) {
-                    result.typo = typo;
+                    result.checks.typo = typo;
                     result.message = `Did you mean ${email.split('@')[0]}@${typo}? Please correct it.`;
                     result.type = 'warning';
                     result.isActive = false;
                     return result;
                 }
 
-                // Step 4: Check if known provider
-                result.knownProvider = isKnownProvider(email);
+                // Check 4: Suspicious patterns (INSTANT)
+                if (isSuspiciousEmail(email)) {
+                    result.checks.suspicious = true;
+                    result.message = 'This email appears to be fake or inactive. Please use a real email address.';
+                    result.type = 'invalid';
+                    return result;
+                }
 
-                // Step 5: For known major providers, mark as active immediately
-                // These are well-established email services that are definitely active
-                if (result.knownProvider) {
+                // Check 5: Known provider (INSTANT - no network needed)
+                if (isKnownProvider(email)) {
+                    result.checks.knownProvider = true;
                     result.isActive = true;
                     result.valid = true;
                     result.message = `✓ Active email - ${domain} is ready to receive messages`;
@@ -826,13 +855,28 @@
                     return result;
                 }
 
-                // Step 6: For other domains, try to verify via DNS
+                // Check 6: For unknown domains, do a quick DNS check with timeout
+                // This is the only network call, and it has a 2-second timeout
+                return validateEmailWithDNS(email, domain, result);
+            }
+
+            // Fast DNS check with timeout for unknown domains
+            async function validateEmailWithDNS(email, domain, result) {
                 try {
-                    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
-                        method: 'GET',
-                        mode: 'cors',
-                        headers: { 'Accept': 'application/dns-json' }
-                    });
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+                    const response = await fetch(
+                        `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`,
+                        {
+                            method: 'GET',
+                            mode: 'cors',
+                            headers: { 'Accept': 'application/dns-json' },
+                            signal: controller.signal
+                        }
+                    );
+
+                    clearTimeout(timeoutId);
 
                     if (response.ok) {
                         const data = await response.json();
@@ -848,17 +892,20 @@
                             }
                         }
                     }
-                } catch (error) {
-                    console.log('DNS verification failed, but proceeding with format validation');
-                }
 
-                // If DNS check fails or no MX records, but format is valid and not disposable,
-                // allow it to proceed (be lenient for unknown domains)
-                result.isActive = true;
-                result.valid = true;
-                result.message = `✓ Valid email - ${domain}`;
-                result.type = 'valid';
-                return result;
+                    // DNS failed or no MX records - mark as inactive
+                    result.message = `Domain "${domain}" cannot receive emails. Please use a different email address.`;
+                    result.type = 'invalid';
+                    result.isActive = false;
+                    return result;
+
+                } catch (error) {
+                    // Network error or timeout - be lenient but warn
+                    result.message = `Could not verify ${domain}. Please ensure this is a real email address.`;
+                    result.type = 'warning';
+                    result.isActive = false;
+                    return result;
+                }
             }
 
             function updateValidationStatus(statusElement, inputElement, errorElement, result) {
@@ -949,6 +996,7 @@
                 };
             }
 
+            // INSTANT validation on input (300ms debounce for fast feedback)
             const validateMainEmail = debounce(async (email) => {
                 const statusElement = document.getElementById('emailStatus');
                 const errorElement = document.getElementById('emailError');
@@ -960,16 +1008,27 @@
                     return;
                 }
 
+                // Show checking state immediately
                 emailInput.classList.add('checking');
                 emailInput.classList.remove('error', 'valid');
                 statusElement.classList.add('show', 'checking');
                 statusElement.classList.remove('valid', 'invalid');
                 statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
-                statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+                statusElement.querySelector('.status-text').textContent = 'Checking...';
 
-                const result = await validateEmail(email);
-                updateValidationStatus(statusElement, emailInput, errorElement, result);
-            }, 700);
+                // Run instant validation
+                const result = validateEmailInstant(email);
+                
+                // If it needs DNS check, await it
+                if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
+                    !result.checks.suspicious && !result.checks.knownProvider) {
+                    const domain = getDomain(email);
+                    const dnsResult = await validateEmailWithDNS(email, domain, result);
+                    updateValidationStatus(statusElement, emailInput, errorElement, dnsResult);
+                } else {
+                    updateValidationStatus(statusElement, emailInput, errorElement, result);
+                }
+            }, 300);
 
             const validateProviderEmail = debounce(async (email) => {
                 const statusElement = document.getElementById('providerEmailStatus');
@@ -988,11 +1047,19 @@
                 statusElement.classList.add('show', 'checking');
                 statusElement.classList.remove('valid', 'invalid');
                 statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
-                statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+                statusElement.querySelector('.status-text').textContent = 'Checking...';
 
-                const result = await validateEmail(email);
-                updateValidationStatus(statusElement, inputField, errorElement, result);
-            }, 700);
+                const result = validateEmailInstant(email);
+                
+                if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
+                    !result.checks.suspicious && !result.checks.knownProvider) {
+                    const domain = getDomain(email);
+                    const dnsResult = await validateEmailWithDNS(email, domain, result);
+                    updateValidationStatus(statusElement, inputField, errorElement, dnsResult);
+                } else {
+                    updateValidationStatus(statusElement, inputField, errorElement, result);
+                }
+            }, 300);
 
             emailInput.addEventListener('input', (e) => {
                 validateMainEmail(e.target.value);
@@ -1014,7 +1081,7 @@
                 }
             });
 
-            // Handle Google/Apple Continue button
+            // Handle Google/Apple Continue button - ONLY ALLOW ACTIVE EMAILS
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
@@ -1035,19 +1102,32 @@
                     return;
                 }
 
-                const result = await validateEmail(email);
-                updateValidationStatus(statusElement, emailField, emailError, result);
-
-                if (!result.isActive) {
-                    emailField.classList.add('error');
-                    if (!result.message || result.type === 'warning') {
-                        emailError.textContent = 'Please use an active email address that can receive messages';
-                    } else {
-                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                const result = validateEmailInstant(email);
+                
+                // If needs DNS check
+                if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
+                    !result.checks.suspicious && !result.checks.knownProvider) {
+                    const domain = getDomain(email);
+                    const dnsResult = await validateEmailWithDNS(email, domain, result);
+                    updateValidationStatus(statusElement, emailField, emailError, dnsResult);
+                    
+                    if (!dnsResult.isActive) {
+                        emailField.classList.add('error');
+                        emailError.textContent = dnsResult.message || 'This email is not active. Please use a different email.';
+                        emailError.classList.add('show');
+                        emailField.focus();
+                        return;
                     }
-                    emailError.classList.add('show');
-                    emailField.focus();
-                    return;
+                } else {
+                    updateValidationStatus(statusElement, emailField, emailError, result);
+                    
+                    if (!result.isActive) {
+                        emailField.classList.add('error');
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                        emailError.classList.add('show');
+                        emailField.focus();
+                        return;
+                    }
                 }
 
                 btn.disabled = true;
@@ -1111,7 +1191,7 @@
 
             attachSocialHandlers();
 
-            // Main Continue button
+            // Main Continue button - ONLY ALLOW ACTIVE EMAILS
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const emailError = document.getElementById('emailError');
@@ -1129,19 +1209,32 @@
                     return;
                 }
 
-                const result = await validateEmail(email);
-                updateValidationStatus(statusElement, emailInput, emailError, result);
-
-                if (!result.isActive) {
-                    emailInput.classList.add('error');
-                    if (!result.message || result.type === 'warning') {
-                        emailError.textContent = 'Please use an active email address that can receive messages';
-                    } else {
-                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                const result = validateEmailInstant(email);
+                
+                // If needs DNS check
+                if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
+                    !result.checks.suspicious && !result.checks.knownProvider) {
+                    const domain = getDomain(email);
+                    const dnsResult = await validateEmailWithDNS(email, domain, result);
+                    updateValidationStatus(statusElement, emailInput, emailError, dnsResult);
+                    
+                    if (!dnsResult.isActive) {
+                        emailInput.classList.add('error');
+                        emailError.textContent = dnsResult.message || 'This email is not active. Please use a different email.';
+                        emailError.classList.add('show');
+                        emailInput.focus();
+                        return;
                     }
-                    emailError.classList.add('show');
-                    emailInput.focus();
-                    return;
+                } else {
+                    updateValidationStatus(statusElement, emailInput, emailError, result);
+                    
+                    if (!result.isActive) {
+                        emailInput.classList.add('error');
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                        emailError.classList.add('show');
+                        emailInput.focus();
+                        return;
+                    }
                 }
 
                 continueBtn.disabled = true;
