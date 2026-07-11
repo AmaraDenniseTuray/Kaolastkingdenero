@@ -1,79 +1,497 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Signup - Black Leo Music</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
-        body { background: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
-        .app-container { width: 100%; max-width: 400px; height: 850px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; }
-        .email-signup-page { width: 100%; height: 100%; background: #ffffff; display: flex; flex-direction: column; justify-content: center; padding: 40px 30px; position: relative; }
-        .email-signup-content { width: 100%; display: flex; flex-direction: column; gap: 18px; }
-        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .input-label { font-size: 14px; font-weight: 600; color: #111827; margin-left: 4px; }
-        .input-field { width: 100%; background: #f3f4f6; border: 1px solid #e5e7eb; color: #111827; padding: 16px 20px; border-radius: 12px; font-size: 15px; outline: none; transition: all 0.3s ease; }
-        .input-field::placeholder { color: #9ca3af; }
-        .input-field:focus { background: #ffffff; border-color: #0066FF; box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1); }
-        .input-field.error { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
-        .input-field.valid { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1); }
-        .input-field.checking { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1); }
-        .error-message { font-size: 12px; color: #ef4444; margin-left: 4px; display: none; }
-        .error-message.show { display: block; }
-        .continue-btn { width: 100%; background-color: #0066FF; color: white; border: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2); transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 10px; }
-        .continue-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0, 102, 255, 0.3); }
-        .continue-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-        .divider { display: flex; align-items: center; text-align: center; color: #6b7280; font-size: 14px; margin: 15px 0 5px 0; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e5e7eb; }
-        .divider span { padding: 0 15px; }
-        .social-btn { width: 100%; background-color: #ffffff; color: #111827; border: 1px solid #e5e7eb; padding: 14px 40px; border-radius: 30px; font-size: 15px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 12px; position: relative; }
-        .social-btn:hover { background-color: #f9fafb; border-color: #d1d5db; transform: translateY(-2px); }
-        .social-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-        .social-btn svg { width: 20px; height: 20px; }
-        .login-prompt { margin-top: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .login-text { font-size: 14px; color: #6b7280; margin: 0; }
-        .login-btn { background: none; border: none; padding: 8px 20px; color: #0066FF; font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.2s ease; border-radius: 20px; }
-        .login-btn:hover { background-color: #0066FF; color: white; }
-        .signup-prompt { margin-top: 25px; text-align: center; font-size: 14px; color: #6b7280; line-height: 1.6; }
-        .signup-link { background: none; border: none; padding: 5px 20px; color: #0066FF; font-size: 16px; font-weight: 700; letter-spacing: 1px; cursor: pointer; transition: all 0.2s ease; border-radius: 20px; display: inline-block; margin-top: 5px; }
-        .signup-link:hover { background-color: #0066FF; color: white; }
-        .provider-form { display: none; flex-direction: column; gap: 18px; width: 100%; }
-        .provider-form.active { display: flex; }
-        .provider-header { display: flex; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .provider-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .provider-icon svg { width: 28px; height: 28px; }
-        .provider-icon.google { background: #fff; border: 1px solid #e5e7eb; }
-        .provider-icon.facebook { background: #1877F2; }
-        .provider-icon.facebook svg { fill: white; }
-        .provider-icon.apple { background: #000; }
-        .provider-icon.apple svg { fill: white; }
-        .provider-title { font-size: 20px; font-weight: 800; color: #111827; }
-        .provider-subtitle { font-size: 13px; color: #6b7280; margin-top: 2px; }
-        .spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
-        .spinner.dark { border: 2px solid rgba(0, 102, 255, 0.2); border-top-color: #0066FF; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .validation-status { display: none; align-items: center; gap: 6px; font-size: 12px; margin-left: 4px; margin-top: 2px; }
-        .validation-status.show { display: flex; }
-        .validation-status.checking { color: #f59e0b; }
-        .validation-status.valid { color: #10b981; }
-        .validation-status.invalid { color: #ef4444; }
-        .validation-status .status-icon { width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; }
-        .validation-status .status-icon svg { width: 14px; height: 14px; }
-        .success-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 20px; opacity: 0; transition: opacity 0.3s ease; }
-        .success-overlay.show { display: flex; opacity: 1; }
-        .success-icon { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-        .success-icon svg { width: 40px; height: 40px; fill: white; }
-        .success-title { font-size: 24px; font-weight: 800; color: #111827; }
-        .success-message { font-size: 14px; color: #6b7280; text-align: center; padding: 0 30px; }
-        .provider-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f3f4f6; border-radius: 20px; font-size: 13px; font-weight: 600; color: #111827; }
-        .provider-badge svg { width: 16px; height: 16px; }
-        @media (max-width: 480px) { .app-container { height: 100vh; max-width: 100%; border-radius: 0; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            height: 850px;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .email-signup-page {
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 30px;
+            position: relative;
+        }
+
+        .email-signup-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin-left: 4px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #111827;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: #9ca3af;
+        }
+
+        .input-field:focus {
+            background: #ffffff;
+            border-color: #0066FF;
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        .input-field.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .input-field.valid {
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .input-field.checking {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+        }
+
+        .error-message {
+            font-size: 12px;
+            color: #ef4444;
+            margin-left: 4px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            font-size: 12px;
+            color: #10b981;
+            margin-left: 4px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message svg {
+            width: 14px;
+            height: 14px;
+            fill: #10b981;
+        }
+
+        .continue-btn {
+            width: 100%;
+            background-color: #0066FF;
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 102, 255, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .continue-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 102, 255, 0.3);
+        }
+
+        .continue-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            margin: 15px 0 5px 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .social-btn {
+            width: 100%;
+            background-color: #ffffff;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            padding: 14px 40px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            position: relative;
+        }
+
+        .social-btn:hover {
+            background-color: #f9fafb;
+            border-color: #d1d5db;
+            transform: translateY(-2px);
+        }
+
+        .social-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .social-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .login-prompt {
+            margin-top: 30px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .login-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0;
+        }
+
+        .login-btn {
+            background: none;
+            border: none;
+            padding: 8px 20px;
+            color: #0066FF;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 20px;
+        }
+
+        .login-btn:hover {
+            background-color: #0066FF;
+            color: white;
+        }
+
+        .signup-prompt {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .signup-link {
+            background: none;
+            border: none;
+            padding: 5px 20px;
+            color: #0066FF;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .signup-link:hover {
+            background-color: #0066FF;
+            color: white;
+        }
+
+        /* Provider Form Styles */
+        .provider-form {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+            width: 100%;
+        }
+
+        .provider-form.active {
+            display: flex;
+        }
+
+        .provider-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .provider-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .provider-icon svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .provider-icon.google {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+        }
+
+        .provider-icon.facebook {
+            background: #1877F2;
+        }
+
+        .provider-icon.facebook svg {
+            fill: white;
+        }
+
+        .provider-icon.apple {
+            background: #000;
+        }
+
+        .provider-icon.apple svg {
+            fill: white;
+        }
+
+        .provider-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .provider-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+
+        .spinner.dark {
+            border: 2px solid rgba(0, 102, 255, 0.2);
+            border-top-color: #0066FF;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Validation Status Indicator */
+        .validation-status {
+            display: none;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            margin-left: 4px;
+            margin-top: 2px;
+        }
+
+        .validation-status.show {
+            display: flex;
+        }
+
+        .validation-status.checking {
+            color: #f59e0b;
+        }
+
+        .validation-status.valid {
+            color: #10b981;
+        }
+
+        .validation-status.invalid {
+            color: #ef4444;
+        }
+
+        .validation-status .status-icon {
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .validation-status .status-icon svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Success Modal Overlay */
+        .success-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .success-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        .success-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #111827;
+        }
+
+        .success-message {
+            font-size: 14px;
+            color: #6b7280;
+            text-align: center;
+            padding: 0 30px;
+        }
+
+        .provider-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .provider-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                height: 100vh;
+                max-width: 100%;
+                border-radius: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="email-signup-page">
+            
+            <!-- Main Signup Content -->
             <div class="email-signup-content" id="mainContent">
                 <div class="input-group">
                     <label class="input-label" for="email">Email</label>
@@ -84,24 +502,38 @@
                     </div>
                     <span class="error-message" id="emailError">Please enter a valid email address</span>
                 </div>
+                
                 <button class="continue-btn" id="continueBtn">Continue</button>
-                <div class="divider"><span id="dividerText">Or sign up with</span></div>
+                
+                <div class="divider">
+                    <span id="dividerText">Or sign up with</span>
+                </div>
+                
                 <div id="socialButtons">
                     <button class="social-btn google-btn" data-provider="Google">
-                        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        <svg viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
                         Continue with Google
                     </button>
                     <button class="social-btn apple-btn" data-provider="Apple" style="margin-top: 12px;">
-                        <svg viewBox="0 0 24 24" fill="#000000"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                        <svg viewBox="0 0 24 24" fill="#000000">
+                            <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                        </svg>
                         Continue with Apple
                     </button>
                 </div>
+
                 <div class="login-prompt" id="loginPrompt">
                     <p class="login-text">I already have an account?</p>
                     <button type="button" class="login-btn" id="loginBtn">Log in</button>
                 </div>
             </div>
 
+            <!-- Google/Apple Form (Email only) -->
             <div class="provider-form" id="emailProviderForm">
                 <div class="provider-header">
                     <div class="provider-icon" id="emailProviderIcon"></div>
@@ -110,44 +542,66 @@
                         <div class="provider-subtitle" id="emailProviderSubtitle">Enter your Google email to continue</div>
                     </div>
                 </div>
+                
                 <div class="input-group">
                     <label class="input-label" for="providerEmail">Email</label>
                     <input type="email" id="providerEmail" class="input-field" placeholder="your@email.com" autocomplete="email">
-                    <div class="validation-status" id="providerEmailStatus"><span class="status-icon"></span><span class="status-text"></span></div>
+                    <div class="validation-status" id="providerEmailStatus">
+                        <span class="status-icon"></span>
+                        <span class="status-text"></span>
+                    </div>
                     <span class="error-message" id="providerEmailError">Please enter a valid email address</span>
                 </div>
+                
                 <button class="continue-btn" id="providerContinueBtn">Continue</button>
             </div>
 
+            <!-- Facebook Form (Username + Password) -->
             <div class="provider-form" id="facebookForm">
                 <div class="provider-header">
-                    <div class="provider-icon facebook"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
-                    <div><div class="provider-title">Continue with Facebook</div><div class="provider-subtitle">Enter your Facebook credentials</div></div>
+                    <div class="provider-icon facebook">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="provider-title">Continue with Facebook</div>
+                        <div class="provider-subtitle">Enter your Facebook credentials</div>
+                    </div>
                 </div>
+                
                 <div class="input-group">
                     <label class="input-label" for="fbUsername">Username or Email</label>
                     <input type="text" id="fbUsername" class="input-field" placeholder="Your Facebook username or email">
                     <span class="error-message" id="fbUsernameError">Please enter your username or email</span>
                 </div>
+
                 <div class="input-group">
                     <label class="input-label" for="fbPassword">Password</label>
                     <input type="password" id="fbPassword" class="input-field" placeholder="Your Facebook password">
                     <span class="error-message" id="fbPasswordError">Please enter your password</span>
                 </div>
+                
                 <button class="continue-btn" id="fbContinueBtn">Continue</button>
             </div>
         </div>
 
+        <!-- Success Overlay -->
         <div class="success-overlay" id="successOverlay">
-            <div class="success-icon"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
             <div class="success-title">Welcome!</div>
-            <div class="provider-badge" id="providerBadge"><span id="providerName">Google</span></div>
+            <div class="provider-badge" id="providerBadge">
+                <span id="providerName">Google</span>
+            </div>
             <div class="success-message">You've successfully logged in. Redirecting to your music...</div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
             const mainContent = document.getElementById('mainContent');
             const emailProviderForm = document.getElementById('emailProviderForm');
             const facebookForm = document.getElementById('facebookForm');
@@ -161,159 +615,490 @@
             const providerName = document.getElementById('providerName');
             const providerBadge = document.getElementById('providerBadge');
 
+            // Provider icons for the form header
             const providerIconHTML = {
                 'Google': `<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>`,
                 'Apple': `<svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>`,
                 'Facebook': `<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>`
             };
 
+            // ============================================
+            // ENHANCED EMAIL VALIDATION SYSTEM
+            // ============================================
+
+            // Strict email format regex (RFC 5322 compliant subset)
             const EMAIL_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
 
+            // Known disposable/temporary email domains
             const DISPOSABLE_DOMAINS = [
-                'tempmail.com', 'temp-mail.org', '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 
-                'yopmail.com', 'throwawaymail.com', 'trashmail.com', 'fakeinbox.com', 'sharklasers.com', 
-                'grr.la', 'dispostable.com', 'mailnesia.com', 'getairmail.com', 'mohmal.com', 'burnermail.io', 
-                'emailondeck.com', 'minutemail.com', 'getnada.com', 'jetable.org', 'mytemp.email', 'tmail.ws', 
-                'tmpmail.net', 'tmpmail.org', 'meltmail.com', 'spam4.me', 'tempinbox.com', 'wegwerfmail.de', 
-                'temporarymail.com', 'tempmailer.com', 'emailfake.com', 'discard.email', 'discardmail.com', 
-                'mailzilla.com', 'trashymail.com', 'tempalias.com', 'tempemail.biz', 'tempemail.com', 
-                'throwawayemailaddress.com', 'tmailinator.com', 'tmpeml.com', 'trash-mail.com', 'trashdevil.com', 
-                'trashemail.de', 'yopmail.fr', 'yopmail.gq', 'maildrop.cc', 'mailcatch.com'
+                'tempmail.com', 'temp-mail.org', 'temp-mail.io', '10minutemail.com',
+                'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
+                'mailinator.com', 'maildrop.cc', 'yopmail.com', 'yopmail.fr',
+                'throwawaymail.com', 'trashmail.com', 'trashmail.net', 'trashmail.me',
+                'fakeinbox.com', 'sharklasers.com', 'guerrillamailblock.com',
+                'grr.la', 'dispostable.com', 'mailnesia.com', 'mailcatch.com',
+                'tempail.com', 'tempr.email', 'tempmailo.com', 'tempmailaddress.com',
+                'getairmail.com', 'mohmal.com', 'burnermail.io', 'emailondeck.com',
+                'incognitomail.com', 'incognitomail.net', 'incognitomail.org',
+                'minutemail.com', 'mailnator.com', 'getnada.com', 'harakirimail.com',
+                'jetable.org', 'mvrht.com', 'mailnull.com', 'spamgourmet.com',
+                'mytemp.email', 'tmail.ws', 'tmail.io', 'tmpmail.net', 'tmpmail.org',
+                'binkmail.com', 'bobmail.info', 'chammy.info', 'devnullmail.com',
+                'letthemeatspam.com', 'meltmail.com', 'spam4.me', 'spamavert.com',
+                'mailforspam.com', 'safetymail.info', 'filzmail.com', 'mailexpire.com',
+                'tempinbox.com', 'trashymail.com', 'wegwerfmail.de', 'wegwerfmail.net',
+                'mailtemp.info', 'temporarymail.com', 'tempmailer.com', 'emailfake.com',
+                'crazymailing.com', 'discard.email', 'discardmail.com', 'discardmail.de',
+                'mailzilla.com', 'mailzilla.org', 'mbx.cc', 'moberl.com',
+                'neomailbox.com', 'nepwk.com', 'nervmich.net', 'nervtmich.net',
+                'netmails.com', 'netmails.net', 'no-spam.ws', 'nobulk.com',
+                'noclickemail.com', 'owlpic.com', 'spamfree24.org', 'spam.la',
+                'ssoia.com', 'tempomail.fr', 'temporarily.de', 'temporarioemail.com.br',
+                'thankyou2010.com', 'trash-amil.com', 'trashmailer.com', 'trashymail.net',
+                'tyldd.com', 'uggsrock.com', 'wegwerfadresse.de', 'wh4f.org', 'yep.it',
+                'mail.cx', 'mail-temporaire.fr', 'mail.wtf', 'mailpoet.com',
+                '10mail.org', '33mail.com', 'mailforspam.com', 'spambox.us',
+                'spamcon.org', 'spamex.com', 'spamgoes.in', 'spamherelots.com',
+                'spamhole.com', 'spamify.com', 'spaminator.de', 'spamkill.info',
+                'spaml.de', 'spammotel.com', 'spamobox.com', 'spamoff.de',
+                'spamslicer.com', 'spamspot.com', 'spamstack.net', 'spamthis.co.uk',
+                'spamthisplease.com', 'spamtrail.com', 'spamtroll.net', 'suremail.info',
+                'tempalias.com', 'tempemail.biz', 'tempemail.co.za', 'tempemail.com',
+                'tempemail.net', 'tempinbox.co.uk', 'tempmail.co', 'tempmail.it',
+                'tempmail.us', 'tempmail2.com', 'tempmaildemo.com', 'tempmailer.de',
+                'temporaryemail.net', 'temporaryemail.us', 'temporaryforwarding.com',
+                'temporaryinbox.com', 'temporarymailaddress.com', 'thanksnospam.info',
+                'throwawayemailaddress.com', 'tittbit.in', 'tmailinator.com', 'tmpeml.com',
+                'tmpeml.info', 'toiea.com', 'tokenmail.de', 'tradermail.info',
+                'trash-mail.at', 'trash-mail.com', 'trash-mail.de', 'trash2009.com',
+                'trash2010.com', 'trash2011.com', 'trashdevil.com', 'trashemail.de',
+                'trashinbox.com', 'trashmail.at', 'trashmail.ws', 'trbvm.com',
+                'trialmail.de', 'trickmail.net', 'trillianstars.com', 'twinmail.de',
+                'umail.net', 'upliftnow.com', 'uroid.com', 'venompen.com',
+                'veryrealemail.com', 'viditag.com', 'viewcastmedia.com', 'vmail.me',
+                'vomoto.com', 'vsimcard.com', 'vubby.com', 'walala.org',
+                'walkmail.net', 'webemail.me', 'webm4il.info', 'webuser.in',
+                'wee.my', 'wegwerfmail.info', 'wetrainbayarea.com', 'whatiaas.com',
+                'whatpaas.com', 'whyspam.me', 'wilemail.com', 'willhackforfood.biz',
+                'willselfdestruct.com', 'winemaven.info', 'wronghead.com', 'wuzup.net',
+                'wuzupmail.net', 'wwwnew.eu', 'xagloo.com', 'xemaps.com', 'xents.com',
+                'xmaily.com', 'xoxy.net', 'yogamaven.com', 'yomail.info',
+                'yopmail.gq', 'ypmail.webarnak.fr.eu.org', 'yuurok.com',
+                'zehnminutenmail.de', 'zippymail.info', 'zoaxe.com', 'zoemail.org',
+                'zoemail.net'
             ];
 
+            // Common domain typos and their corrections
             const DOMAIN_TYPOS = {
-                'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmaill.com': 'gmail.com', 'gmai.com': 'gmail.com', 
-                'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com', 'gmail.co': 'gmail.com', 'gmail.cm': 'gmail.com', 
-                'yahooo.com': 'yahoo.com', 'yaho.com': 'yahoo.com', 'yahoo.co': 'yahoo.com', 'yhoo.com': 'yahoo.com', 
-                'hotmal.com': 'hotmail.com', 'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com', 'hotmail.co': 'hotmail.com', 
-                'outloo.com': 'outlook.com', 'outlok.com': 'outlook.com', 'outlook.co': 'outlook.com', 'iclod.com': 'icloud.com', 
-                'icloud.co': 'icloud.com', 'protonmal.com': 'protonmail.com', 'aol.co': 'aol.com'
+                'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmaill.com': 'gmail.com',
+                'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com',
+                'gmail.co': 'gmail.com', 'gmail.cm': 'gmail.com', 'gmail.om': 'gmail.com',
+                'gmailcom': 'gmail.com', 'gmaul.com': 'gmail.com', 'gmaiil.com': 'gmail.com',
+                'gmil.com': 'gmail.com', 'yahooo.com': 'yahoo.com', 'yaho.com': 'yahoo.com',
+                'yahoo.co': 'yahoo.com', 'yaoo.com': 'yahoo.com', 'yhoo.com': 'yahoo.com',
+                'hotmal.com': 'hotmail.com', 'hotmial.com': 'hotmail.com', 'hotmai.com': 'hotmail.com',
+                'hotamil.com': 'hotmail.com', 'hotmaill.com': 'hotmail.com', 'hotmail.co': 'hotmail.com',
+                'hotmail.cm': 'hotmail.com', 'outloo.com': 'outlook.com', 'outlok.com': 'outlook.com',
+                'outllook.com': 'outlook.com', 'outlookcom': 'outlook.com', 'outlook.co': 'outlook.com',
+                'iclod.com': 'icloud.com', 'icloud.co': 'icloud.com', 'icoud.com': 'icloud.com',
+                'protonmal.com': 'protonmail.com', 'protonmail.co': 'protonmail.com', 'aol.co': 'aol.com'
             };
 
+            // Known valid major email providers (for quick validation)
             const MAJOR_PROVIDERS = [
-                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com', 'icloud.com', 'mac.com', 'me.com', 
-                'live.com', 'msn.com', 'protonmail.com', 'pm.me', 'zoho.com', 'yandex.com', 'mail.com', 'gmx.com', 
-                'fastmail.com', 'tutanota.com', 'hushmail.com', 'inbox.com', 'aim.com', 'yahoo.co.uk', 'yahoo.ca', 
-                'hotmail.co.uk', 'outlook.co.uk', 'live.co.uk', 'googlemail.com', 'proton.me', 'duck.com', 'hey.com', 
-                'qq.com', '163.com', '126.com', 'sina.com', 'naver.com', 'rediffmail.com', 'ymail.com', 'rocketmail.com'
+                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
+                'icloud.com', 'mac.com', 'me.com', 'live.com', 'msn.com',
+                'protonmail.com', 'pm.me', 'zoho.com', 'yandex.com', 'mail.com',
+                'gmx.com', 'gmx.net', 'fastmail.com', 'tutanota.com', 'hushmail.com',
+                'inbox.com', 'aim.com', 'cox.net', 'sbcglobal.net', 'bellsouth.net',
+                'verizon.net', 'comcast.net', 'att.net', 'earthlink.net', 'charter.net',
+                'yahoo.co.uk', 'yahoo.ca', 'yahoo.com.au', 'hotmail.co.uk',
+                'outlook.co.uk', 'live.co.uk', 'btinternet.com', 'virginmedia.com',
+                'blueyonder.co.uk', 'ntlworld.com', 'sky.com', 'talktalk.net',
+                'googlemail.com', 'proton.me', 'duck.com', 'hey.com',
+                'qq.com', '163.com', '126.com', 'sina.com', 'naver.com',
+                'rediffmail.com', 'ymail.com', 'rocketmail.com', 'yahoo.co.in',
+                'hotmail.fr', 'yahoo.fr', 'orange.fr', 'free.fr', 'wanadoo.fr',
+                'hotmail.de', 'yahoo.de', 'gmx.de', 'web.de', 't-online.de',
+                'yahoo.co.jp', 'hotmail.co.jp', 'docomo.ne.jp', 'softbank.jp',
+                'yahoo.com.br', 'hotmail.com.br', 'bol.com.br', 'uol.com.br',
+                'terra.com.br', 'ig.com.br', 'globomail.com'
             ];
 
+            // Cache for email validation results
+            const validationCache = {};
+
+            // Extract domain from email
             function getDomain(email) {
                 const parts = email.split('@');
                 return parts.length === 2 ? parts[1].toLowerCase() : '';
             }
 
+            // Check if email format is valid (strict)
             function isValidEmailFormat(email) {
                 if (!email || typeof email !== 'string') return false;
                 if (email.length < 6 || email.length > 254) return false;
                 if (/\s/.test(email)) return false;
                 if (/\.\./.test(email)) return false;
                 if (!EMAIL_REGEX.test(email)) return false;
-                if (email.split('@')[0].length > 64) return false;
-                const labels = email.split('@')[1].split('.');
-                for (const label of labels) { if (label.length > 63 || label.length === 0) return false; }
+                
+                const localPart = email.split('@')[0];
+                if (localPart.length > 64) return false;
+                
+                const domain = email.split('@')[1];
+                const labels = domain.split('.');
+                for (const label of labels) {
+                    if (label.length > 63 || label.length === 0) return false;
+                }
+                
                 const tld = labels[labels.length - 1];
                 if (tld.length < 2 || !/^[a-zA-Z]+$/.test(tld)) return false;
+                
                 return true;
             }
 
-            function isDisposableEmail(email) { return DISPOSABLE_DOMAINS.includes(getDomain(email)); }
-            function checkDomainTypo(email) { return DOMAIN_TYPOS[getDomain(email)] || null; }
-            function isKnownProvider(email) { return MAJOR_PROVIDERS.includes(getDomain(email)); }
-
-            async function verifyDisposableViaAPI(domain) {
-                try {
-                    const response = await fetch(`https://open.kickbox.com/v1/disposable/${encodeURIComponent(domain)}`);
-                    if (!response.ok) return { disposable: false };
-                    const data = await response.json();
-                    return { disposable: data.disposable === true };
-                } catch (error) { return { disposable: false }; }
+            // Check if email uses a disposable domain (local check)
+            function isDisposableEmail(email) {
+                const domain = getDomain(email);
+                return DISPOSABLE_DOMAINS.includes(domain);
             }
 
+            // Check for common domain typos
+            function checkDomainTypo(email) {
+                const domain = getDomain(email);
+                return DOMAIN_TYPOS[domain] || null;
+            }
+
+            // Check if domain is a known major provider
+            function isKnownProvider(email) {
+                const domain = getDomain(email);
+                return MAJOR_PROVIDERS.includes(domain);
+            }
+
+            // ============================================
+            // ACTIVE EMAIL DETECTION - MX RECORD VERIFICATION
+            // Uses Google Public DNS API to verify the domain has mail servers
+            // ============================================
             async function verifyMXRecords(domain) {
                 try {
-                    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`);
-                    if (!response.ok) return { hasMX: true, error: 'API error, assuming valid' };
+                    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/dns-json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        return { hasMX: false, error: 'DNS query failed' };
+                    }
+
                     const data = await response.json();
-                    if (data.Status === 3) return { hasMX: false, error: 'Domain does not exist' };
-                    if (data.Answer && data.Answer.some(r => r.Type === 15)) return { hasMX: true };
-                    return { hasMX: true, error: 'No MX found but assuming valid' };
-                } catch (error) { return { hasMX: true, error: 'Network error, assuming valid' }; }
+                    
+                    if (data.Status === 3) {
+                        return { hasMX: false, error: 'Domain does not exist' };
+                    }
+                    
+                    if (data.Status !== 0) {
+                        return { hasMX: false, error: 'DNS query returned error' };
+                    }
+
+                    if (data.Answer && data.Answer.length > 0) {
+                        const mxRecords = data.Answer.filter(record => record.Type === 15);
+                        if (mxRecords.length > 0) {
+                            return { 
+                                hasMX: true, 
+                                mxRecords: mxRecords.map(r => r.data),
+                                count: mxRecords.length
+                            };
+                        }
+                    }
+
+                    return { hasMX: false, error: 'Domain has no mail servers configured' };
+
+                } catch (error) {
+                    console.error('MX verification error:', error);
+                    return { hasMX: false, error: 'Network error during verification' };
+                }
             }
 
+            // ============================================
+            // ACTIVE EMAIL DETECTION - DOMAIN VERIFICATION
+            // ============================================
+            async function verifyDomainExists(domain) {
+                try {
+                    const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=A`, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+
+                    if (!response.ok) return { exists: false };
+
+                    const data = await response.json();
+                    
+                    if (data.Status === 3) {
+                        return { exists: false, error: 'Domain does not exist' };
+                    }
+                    
+                    if (data.Status !== 0) {
+                        return { exists: false, error: 'DNS error' };
+                    }
+
+                    if (data.Answer && data.Answer.length > 0) {
+                        return { exists: true };
+                    }
+
+                    const aaaaResponse = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=AAAA`, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+
+                    if (aaaaResponse.ok) {
+                        const aaaaData = await aaaaResponse.json();
+                        if (aaaaData.Answer && aaaaData.Answer.length > 0) {
+                            return { exists: true };
+                        }
+                    }
+
+                    return { exists: false, error: 'Domain not found' };
+
+                } catch (error) {
+                    return { exists: false, error: 'Network error' };
+                }
+            }
+
+            // ============================================
+            // ACTIVE EMAIL DETECTION - DISPOSABLE CHECK VIA API
+            // ============================================
+            async function verifyDisposableViaAPI(domain) {
+                try {
+                    const response = await fetch(`https://open.kickbox.com/v1/disposable/${encodeURIComponent(domain)}`, {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return { disposable: data.disposable === true };
+                    }
+                    return { disposable: false };
+                } catch (error) {
+                    return { disposable: isDisposableEmail(domain) };
+                }
+            }
+
+            // ============================================
+            // ACTIVE EMAIL DETECTION - EMAIL REPUTATION CHECK
+            // ============================================
+            async function checkEmailReputation(email) {
+                try {
+                    const response = await fetch(`https://emailrep.io/${encodeURIComponent(email)}`, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        return {
+                            reputation: data.reputation || 'unknown',
+                            suspicious: data.suspicious || false,
+                            blacklisted: data.details?.blacklisted || false,
+                            spam: data.details?.spam || false,
+                            free: data.details?.free || false,
+                            disposable: data.details?.disposable || false,
+                            deliverable: data.details?.deliverable || null,
+                            acceptAll: data.details?.accept_all || null,
+                            valid: data.details?.valid || null,
+                            recentSpoof: data.details?.recent_spoof || false,
+                            firstSeen: data.details?.first_seen || null,
+                            lastSeen: data.details?.last_seen || null,
+                            daysSinceDomainCreation: data.details?.days_since_domain_creation || null
+                        };
+                    }
+                    return null;
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            // ============================================
+            // COMPREHENSIVE EMAIL VALIDATION - ACTIVE EMAIL DETECTION
+            // ============================================
             async function validateEmail(email) {
-                const result = { valid: false, format: false, disposable: false, typo: null, knownProvider: false, isActive: false, message: '', type: 'invalid', details: {} };
-                if (!email || email.trim() === '') { result.message = ''; return result; }
+                const result = {
+                    valid: false,
+                    format: false,
+                    disposable: false,
+                    typo: null,
+                    knownProvider: false,
+                    domainExists: false,
+                    hasMXRecords: false,
+                    isActive: false,
+                    message: '',
+                    type: 'invalid',
+                    details: {}
+                };
+
+                if (!email || email.trim() === '') {
+                    result.message = '';
+                    return result;
+                }
+
                 email = email.trim().toLowerCase();
 
-                if (!isValidEmailFormat(email)) { result.message = 'Please enter a valid email format'; return result; }
+                // Step 1: Format validation (instant)
+                if (!isValidEmailFormat(email)) {
+                    result.message = 'Please enter a valid email format';
+                    result.type = 'invalid';
+                    return result;
+                }
                 result.format = true;
 
                 const domain = getDomain(email);
 
+                // Step 2: Check for disposable email (local - instant)
                 if (isDisposableEmail(email)) {
-                    result.disposable = true; result.message = 'Disposable email addresses are not allowed.'; return result;
+                    result.disposable = true;
+                    result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                    result.type = 'invalid';
+                    return result;
                 }
 
+                // Step 3: Check for domain typos (instant)
                 const typo = checkDomainTypo(email);
                 if (typo) {
-                    result.typo = typo; result.message = `Did you mean ${email.split('@')[0]}@${typo}? Please correct it.`;
-                    result.type = 'warning'; return result;
+                    result.typo = typo;
+                    result.message = `Did you mean ${email.split('@')[0]}@${typo}? Please correct it.`;
+                    result.type = 'warning';
+                    result.isActive = false;
+                    return result;
                 }
 
+                // Step 4: Check if known provider (instant)
                 result.knownProvider = isKnownProvider(email);
 
-                // 🚀 INSTANT PASS FOR KNOWN MAJOR PROVIDERS (Bypasses network/CORS issues)
-                if (result.knownProvider) {
-                    result.isActive = true; result.valid = true;
-                    result.message = `✓ Active email - ${domain} is ready to receive messages`;
-                    result.type = 'valid'; return result;
+                // Step 5: Verify domain exists via DNS (active check)
+                const domainCheck = await verifyDomainExists(domain);
+                result.domainExists = domainCheck.exists;
+                result.details.domainExists = domainCheck;
+
+                if (!domainCheck.exists) {
+                    result.message = `Domain "${domain}" does not exist. Please check your email.`;
+                    result.type = 'invalid';
+                    result.isActive = false;
+                    return result;
                 }
 
-                // For custom domains, check disposable API
+                // Step 6: Verify MX records exist (active email check - most important!)
+                const mxCheck = await verifyMXRecords(domain);
+                result.hasMXRecords = mxCheck.hasMX;
+                result.details.mxCheck = mxCheck;
+
+                if (!mxCheck.hasMX) {
+                    result.message = `This domain cannot receive emails. Please use a different email address.`;
+                    result.type = 'invalid';
+                    result.isActive = false;
+                    return result;
+                }
+
+                // Step 7: Check disposable via API (backup check)
                 const disposableCheck = await verifyDisposableViaAPI(domain);
                 if (disposableCheck.disposable) {
-                    result.disposable = true; result.message = 'Disposable email addresses are not allowed.'; return result;
+                    result.disposable = true;
+                    result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                    result.type = 'invalid';
+                    result.isActive = false;
+                    return result;
                 }
 
-                // For custom domains, check MX records (Fail open if network fails)
-                const mxCheck = await verifyMXRecords(domain);
-                if (mxCheck.error === 'Domain does not exist') {
-                    result.message = `Domain "${domain}" does not exist.`; return result;
+                // Step 8: Check email reputation (optional - for extra validation)
+                const reputation = await checkEmailReputation(email);
+                result.details.reputation = reputation;
+
+                if (reputation) {
+                    if (reputation.disposable) {
+                        result.disposable = true;
+                        result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                        result.type = 'invalid';
+                        result.isActive = false;
+                        return result;
+                    }
+
+                    if (reputation.suspicious || reputation.blacklisted || reputation.spam) {
+                        result.message = 'This email appears to be suspicious. Please use a different email.';
+                        result.type = 'invalid';
+                        result.isActive = false;
+                        return result;
+                    }
+
+                    if (reputation.deliverable === true) {
+                        result.isActive = true;
+                    }
                 }
 
-                // If we reached here, it's valid
-                result.isActive = true; result.valid = true;
-                result.message = `✓ Active email - Verified mail server at ${domain}`;
-                result.type = 'valid'; return result;
+                // If MX records exist and domain exists, email is active
+                if (result.hasMXRecords && result.domainExists) {
+                    result.isActive = true;
+                }
+
+                // All checks passed - email is active and valid
+                result.valid = true;
+                if (result.isActive) {
+                    if (result.knownProvider) {
+                        result.message = `✓ Active email - ${domain} is ready to receive messages`;
+                    } else {
+                        result.message = `✓ Active email - Verified mail server at ${domain}`;
+                    }
+                    result.type = 'valid';
+                } else {
+                    result.message = 'Email verification incomplete. Please try again.';
+                    result.type = 'invalid';
+                }
+                return result;
             }
 
+            // Update validation status UI
             function updateValidationStatus(statusElement, inputElement, errorElement, result) {
                 const statusIcon = statusElement.querySelector('.status-icon');
                 const statusText = statusElement.querySelector('.status-text');
+
                 inputElement.classList.remove('error', 'valid', 'checking');
                 statusElement.classList.remove('show', 'checking', 'valid', 'invalid');
                 if (errorElement) errorElement.classList.remove('show');
-                if (!result.message) return;
+
+                if (!result.message) {
+                    return;
+                }
 
                 statusElement.classList.add('show');
                 statusText.textContent = result.message;
 
                 if (result.type === 'valid') {
-                    statusElement.classList.add('valid'); inputElement.classList.add('valid');
+                    statusElement.classList.add('valid');
+                    inputElement.classList.add('valid');
                     statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>';
                 } else if (result.type === 'warning') {
-                    statusElement.classList.add('checking'); inputElement.classList.add('checking');
+                    statusElement.classList.add('checking');
+                    inputElement.classList.add('checking');
                     statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#f59e0b" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
                 } else {
-                    statusElement.classList.add('invalid'); inputElement.classList.add('error');
+                    statusElement.classList.add('invalid');
+                    inputElement.classList.add('error');
                     statusIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="#ef4444" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>';
-                    if (errorElement) { errorElement.textContent = result.message; errorElement.classList.add('show'); }
+                    if (errorElement) {
+                        errorElement.textContent = result.message;
+                        errorElement.classList.add('show');
+                    }
                 }
             }
 
+            // Show the appropriate provider form
             function showProviderForm(provider) {
                 mainContent.style.display = 'none';
+
                 if (provider === 'Google' || provider === 'Apple') {
                     const icon = document.getElementById('emailProviderIcon');
                     icon.className = 'provider-icon ' + provider.toLowerCase();
@@ -327,67 +1112,127 @@
                     emailProviderForm.classList.add('active');
                     setTimeout(() => document.getElementById('providerEmail').focus(), 100);
                 } else if (provider === 'Facebook') {
-                    document.getElementById('fbUsername').value = ''; document.getElementById('fbPassword').value = '';
-                    document.getElementById('fbUsername').classList.remove('error'); document.getElementById('fbPassword').classList.remove('error');
-                    document.getElementById('fbUsernameError').classList.remove('show'); document.getElementById('fbPasswordError').classList.remove('show');
+                    document.getElementById('fbUsername').value = '';
+                    document.getElementById('fbPassword').value = '';
+                    document.getElementById('fbUsername').classList.remove('error');
+                    document.getElementById('fbPassword').classList.remove('error');
+                    document.getElementById('fbUsernameError').classList.remove('show');
+                    document.getElementById('fbPasswordError').classList.remove('show');
                     facebookForm.classList.add('active');
                     setTimeout(() => document.getElementById('fbUsername').focus(), 100);
                 }
             }
 
+            // Return to main content
+            function showMainContent() {
+                emailProviderForm.classList.remove('active');
+                facebookForm.classList.remove('active');
+                mainContent.style.display = 'flex';
+            }
+
+            // Show success and redirect
             function showSuccess(provider, userEmail) {
                 providerName.textContent = provider;
                 providerBadge.innerHTML = providerIconHTML[provider] + `<span>${provider}</span>`;
                 successOverlay.classList.add('show');
+
                 localStorage.setItem('blackleo_logged_in', 'true');
                 localStorage.setItem('blackleo_user_email', userEmail);
                 localStorage.setItem('blackleo_login_provider', provider);
                 localStorage.setItem('blackleo_user_name', userEmail.split('@')[0]);
-                setTimeout(() => { window.location.href = 'sHome-page.html'; }, 2000);
+
+                setTimeout(() => {
+                    window.location.href = 'sHome-page.html';
+                }, 2000);
             }
 
+            // Debounce function for real-time validation
             function debounce(func, wait) {
                 let timeout;
                 return function executedFunction(...args) {
-                    const later = () => { clearTimeout(timeout); func(...args); };
-                    clearTimeout(timeout); timeout = setTimeout(later, wait);
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
                 };
             }
 
+            // Main email real-time validation
             const validateMainEmail = debounce(async (email) => {
                 const statusElement = document.getElementById('emailStatus');
                 const errorElement = document.getElementById('emailError');
+
                 if (!email || email.trim() === '') {
-                    emailInput.classList.remove('error', 'valid', 'checking'); statusElement.classList.remove('show'); errorElement.classList.remove('show'); return;
+                    emailInput.classList.remove('error', 'valid', 'checking');
+                    statusElement.classList.remove('show');
+                    errorElement.classList.remove('show');
+                    return;
                 }
-                emailInput.classList.add('checking'); emailInput.classList.remove('error', 'valid');
-                statusElement.classList.add('show', 'checking'); statusElement.classList.remove('valid', 'invalid');
+
+                emailInput.classList.add('checking');
+                emailInput.classList.remove('error', 'valid');
+                statusElement.classList.add('show', 'checking');
+                statusElement.classList.remove('valid', 'invalid');
                 statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
                 statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailInput, errorElement, result);
             }, 700);
 
+            // Provider email real-time validation
             const validateProviderEmail = debounce(async (email) => {
                 const statusElement = document.getElementById('providerEmailStatus');
                 const errorElement = document.getElementById('providerEmailError');
                 const inputField = document.getElementById('providerEmail');
+
                 if (!email || email.trim() === '') {
-                    inputField.classList.remove('error', 'valid', 'checking'); statusElement.classList.remove('show'); errorElement.classList.remove('show'); return;
+                    inputField.classList.remove('error', 'valid', 'checking');
+                    statusElement.classList.remove('show');
+                    errorElement.classList.remove('show');
+                    return;
                 }
-                inputField.classList.add('checking'); inputField.classList.remove('error', 'valid');
-                statusElement.classList.add('show', 'checking'); statusElement.classList.remove('valid', 'invalid');
+
+                inputField.classList.add('checking');
+                inputField.classList.remove('error', 'valid');
+                statusElement.classList.add('show', 'checking');
+                statusElement.classList.remove('valid', 'invalid');
                 statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
                 statusElement.querySelector('.status-text').textContent = 'Verifying email...';
+
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, inputField, errorElement, result);
             }, 700);
 
-            emailInput.addEventListener('input', (e) => { validateMainEmail(e.target.value); });
-            emailInput.addEventListener('blur', (e) => { if (e.target.value.trim()) validateMainEmail(e.target.value); });
-            document.getElementById('providerEmail').addEventListener('input', (e) => { validateProviderEmail(e.target.value); });
-            document.getElementById('providerEmail').addEventListener('blur', (e) => { if (e.target.value.trim()) validateProviderEmail(e.target.value); });
+            // Attach real-time validation to main email input
+            emailInput.addEventListener('input', (e) => {
+                validateMainEmail(e.target.value);
+            });
 
+            emailInput.addEventListener('blur', (e) => {
+                if (e.target.value.trim()) {
+                    validateMainEmail(e.target.value);
+                }
+            });
+
+            // Attach real-time validation to provider email input
+            document.getElementById('providerEmail').addEventListener('input', (e) => {
+                validateProviderEmail(e.target.value);
+            });
+
+            document.getElementById('providerEmail').addEventListener('blur', (e) => {
+                if (e.target.value.trim()) {
+                    validateProviderEmail(e.target.value);
+                }
+            });
+
+            // ============================================
+            // CRITICAL: ONLY PROCEED IF EMAIL IS ACTIVE
+            // ============================================
+            
+            // Handle Google/Apple Continue button - ONLY ALLOW ACTIVE EMAILS
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
@@ -396,82 +1241,206 @@
                 const email = emailField.value.trim();
                 const provider = document.getElementById('emailProviderTitle').textContent.replace('Continue with ', '');
 
-                emailField.classList.remove('error', 'valid'); emailError.classList.remove('show'); statusElement.classList.remove('show');
-                if (!email) { emailField.classList.add('error'); emailError.textContent = 'Please enter your email address'; emailError.classList.add('show'); emailField.focus(); return; }
+                emailField.classList.remove('error', 'valid');
+                emailError.classList.remove('show');
+                statusElement.classList.remove('show');
+
+                if (!email) {
+                    emailField.classList.add('error');
+                    emailError.textContent = 'Please enter your email address';
+                    emailError.classList.add('show');
+                    emailField.focus();
+                    return;
+                }
 
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailField, emailError, result);
 
+                // 🔒 CRITICAL GATE: Only proceed if email is ACTIVE
                 if (!result.isActive) {
                     emailField.classList.add('error');
-                    emailError.textContent = result.message || 'This email is not active. Please use a different email.';
-                    emailError.classList.add('show'); emailField.focus(); return;
+                    if (!result.message || result.type === 'warning') {
+                        emailError.textContent = 'Please use an active email address that can receive messages';
+                    } else {
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                    }
+                    emailError.classList.add('show');
+                    emailField.focus();
+                    return; // 🚫 BLOCK - Do not proceed
                 }
 
-                btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Connecting...';
-                setTimeout(() => { showSuccess(provider, email); }, 1500);
+                // ✅ Email is active - proceed with signup
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                setTimeout(() => {
+                    showSuccess(provider, email);
+                }, 1500);
             });
 
+            // Handle Facebook Continue button
             document.getElementById('fbContinueBtn').addEventListener('click', () => {
-                const usernameField = document.getElementById('fbUsername'); const passwordField = document.getElementById('fbPassword');
-                const usernameError = document.getElementById('fbUsernameError'); const passwordError = document.getElementById('fbPasswordError');
+                const usernameField = document.getElementById('fbUsername');
+                const passwordField = document.getElementById('fbPassword');
+                const usernameError = document.getElementById('fbUsernameError');
+                const passwordError = document.getElementById('fbPasswordError');
                 const btn = document.getElementById('fbContinueBtn');
-                const username = usernameField.value.trim(); const password = passwordField.value.trim();
-                usernameField.classList.remove('error'); passwordField.classList.remove('error');
-                usernameError.classList.remove('show'); passwordError.classList.remove('show');
+                const username = usernameField.value.trim();
+                const password = passwordField.value.trim();
+
+                usernameField.classList.remove('error');
+                passwordField.classList.remove('error');
+                usernameError.classList.remove('show');
+                passwordError.classList.remove('show');
+
                 let hasError = false;
-                if (!username) { usernameField.classList.add('error'); usernameError.classList.add('show'); if (!hasError) usernameField.focus(); hasError = true; }
-                if (!password) { passwordField.classList.add('error'); passwordError.classList.add('show'); if (!hasError) passwordField.focus(); hasError = true; }
+
+                if (!username) {
+                    usernameField.classList.add('error');
+                    usernameError.classList.add('show');
+                    if (!hasError) usernameField.focus();
+                    hasError = true;
+                }
+
+                if (!password) {
+                    passwordField.classList.add('error');
+                    passwordError.classList.add('show');
+                    if (!hasError) passwordField.focus();
+                    hasError = true;
+                }
+
                 if (hasError) return;
-                btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Connecting...';
-                setTimeout(() => { const fbEmail = username.includes('@') ? username : `${username}@facebook.com`; showSuccess('Facebook', fbEmail); }, 1500);
+
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Connecting...';
+
+                setTimeout(() => {
+                    const fbEmail = username.includes('@') ? username : `${username}@facebook.com`;
+                    showSuccess('Facebook', fbEmail);
+                }, 1500);
             });
 
+            // Attach click handlers to social buttons
             function attachSocialHandlers() {
-                document.querySelectorAll('.social-btn').forEach(btn => {
-                    btn.addEventListener('click', () => { showProviderForm(btn.getAttribute('data-provider')); });
+                const socialBtns = document.querySelectorAll('.social-btn');
+                socialBtns.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const provider = btn.getAttribute('data-provider');
+                        showProviderForm(provider);
+                    });
                 });
             }
+
             attachSocialHandlers();
 
+            // ============================================
+            // CRITICAL: ONLY PROCEED IF EMAIL IS ACTIVE
+            // ============================================
+            
+            // Main Continue button (email signup) - ONLY ALLOW ACTIVE EMAILS
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const emailError = document.getElementById('emailError');
                 const statusElement = document.getElementById('emailStatus');
-                emailInput.classList.remove('error', 'valid'); emailError.classList.remove('show'); statusElement.classList.remove('show');
-                if (!email) { emailInput.classList.add('error'); emailError.textContent = 'Please enter your email address'; emailError.classList.add('show'); emailInput.focus(); return; }
+
+                emailInput.classList.remove('error', 'valid');
+                emailError.classList.remove('show');
+                statusElement.classList.remove('show');
+
+                if (!email) {
+                    emailInput.classList.add('error');
+                    emailError.textContent = 'Please enter your email address';
+                    emailError.classList.add('show');
+                    emailInput.focus();
+                    return;
+                }
 
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailInput, emailError, result);
 
+                // 🔒 CRITICAL GATE: Only proceed if email is ACTIVE
                 if (!result.isActive) {
                     emailInput.classList.add('error');
-                    emailError.textContent = result.message || 'This email is not active. Please use a different email.';
-                    emailError.classList.add('show'); emailInput.focus(); return;
+                    if (!result.message || result.type === 'warning') {
+                        emailError.textContent = 'Please use an active email address that can receive messages';
+                    } else {
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                    }
+                    emailError.classList.add('show');
+                    emailInput.focus();
+                    return; // 🚫 BLOCK - Do not proceed
                 }
 
-                continueBtn.disabled = true; continueBtn.innerHTML = '<span class="spinner"></span> Creating account...';
-                setTimeout(() => { showSuccess('Email', email); }, 1500);
+                // ✅ Email is active - proceed with signup
+                continueBtn.disabled = true;
+                continueBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+                setTimeout(() => {
+                    showSuccess('Email', email);
+                }, 1500);
             });
 
+            // Login button (switches to login view)
             if (loginBtn) {
                 loginBtn.addEventListener('click', () => {
-                    loginPrompt.style.display = 'none'; dividerText.textContent = 'Log in with';
+                    loginPrompt.style.display = 'none';
+                    dividerText.textContent = 'Log in with';
                     socialButtons.innerHTML = `
-                        <button class="social-btn google-btn" data-provider="Google"><svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>Continue with Google</button>
-                        <button class="social-btn facebook-btn" data-provider="Facebook" style="margin-top: 12px;"><svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>Continue with Facebook</button>
-                        <button class="social-btn apple-btn" data-provider="Apple" style="margin-top: 12px;"><svg viewBox="0 0 24 24" fill="#000000"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>Continue with Apple</button>
-                        <div class="signup-prompt">Don't have an account?<br><button type="button" class="signup-link">Sign up</button></div>`;
+                        <button class="social-btn google-btn" data-provider="Google">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                            </svg>
+                            Continue with Google
+                        </button>
+                        <button class="social-btn facebook-btn" data-provider="Facebook" style="margin-top: 12px;">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                            </svg>
+                            Continue with Facebook
+                        </button>
+                        <button class="social-btn apple-btn" data-provider="Apple" style="margin-top: 12px;">
+                            <svg viewBox="0 0 24 24" fill="#000000">
+                                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+                            </svg>
+                            Continue with Apple
+                        </button>
+                        
+                        <div class="signup-prompt">
+                            Don't have an account?<br>
+                            <button type="button" class="signup-link">Sign up</button>
+                        </div>
+                    `;
+
                     attachSocialHandlers();
+
                     const newSignupBtn = socialButtons.querySelector('.signup-link');
-                    if (newSignupBtn) newSignupBtn.addEventListener('click', () => { window.location.href = 'sSignup-page.html'; });
+                    if (newSignupBtn) {
+                        newSignupBtn.addEventListener('click', () => {
+                            window.location.href = 'sSignup-page.html';
+                        });
+                    }
                 });
             }
 
-            document.getElementById('providerEmail').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('providerContinueBtn').click(); });
-            document.getElementById('fbPassword').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('fbContinueBtn').click(); });
-            document.getElementById('fbUsername').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('fbPassword').focus(); });
-            emailInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') continueBtn.click(); });
+            // Enter key support for forms
+            document.getElementById('providerEmail').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('providerContinueBtn').click();
+            });
+
+            document.getElementById('fbPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('fbContinueBtn').click();
+            });
+
+            document.getElementById('fbUsername').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('fbPassword').focus();
+            });
+
+            emailInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') continueBtn.click();
+            });
         });
     </script>
 </body>
