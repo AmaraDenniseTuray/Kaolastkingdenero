@@ -973,7 +973,6 @@
                     result.typo = typo;
                     result.message = `Did you mean ${email.split('@')[0]}@${typo}? Please correct it.`;
                     result.type = 'warning';
-                    // Don't return - let user know but block continuation
                     result.isActive = false;
                     return result;
                 }
@@ -1229,6 +1228,10 @@
                 }
             });
 
+            // ============================================
+            // CRITICAL: ONLY PROCEED IF EMAIL IS ACTIVE
+            // ============================================
+            
             // Handle Google/Apple Continue button - ONLY ALLOW ACTIVE EMAILS
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
@@ -1253,7 +1256,7 @@
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailField, emailError, result);
 
-                // CRITICAL: Only allow continuation if email is ACTIVE
+                // 🔒 CRITICAL GATE: Only proceed if email is ACTIVE
                 if (!result.isActive) {
                     emailField.classList.add('error');
                     if (!result.message || result.type === 'warning') {
@@ -1263,9 +1266,10 @@
                     }
                     emailError.classList.add('show');
                     emailField.focus();
-                    return;
+                    return; // 🚫 BLOCK - Do not proceed
                 }
 
+                // ✅ Email is active - proceed with signup
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner"></span> Connecting...';
 
@@ -1329,6 +1333,10 @@
 
             attachSocialHandlers();
 
+            // ============================================
+            // CRITICAL: ONLY PROCEED IF EMAIL IS ACTIVE
+            // ============================================
+            
             // Main Continue button (email signup) - ONLY ALLOW ACTIVE EMAILS
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
@@ -1350,7 +1358,7 @@
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailInput, emailError, result);
 
-                // CRITICAL: Only allow continuation if email is ACTIVE
+                // 🔒 CRITICAL GATE: Only proceed if email is ACTIVE
                 if (!result.isActive) {
                     emailInput.classList.add('error');
                     if (!result.message || result.type === 'warning') {
@@ -1360,9 +1368,10 @@
                     }
                     emailError.classList.add('show');
                     emailInput.focus();
-                    return;
+                    return; // 🚫 BLOCK - Do not proceed
                 }
 
+                // ✅ Email is active - proceed with signup
                 continueBtn.disabled = true;
                 continueBtn.innerHTML = '<span class="spinner"></span> Creating account...';
 
