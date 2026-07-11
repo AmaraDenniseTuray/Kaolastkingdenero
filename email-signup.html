@@ -781,7 +781,6 @@
             // ============================================
             async function verifyMXRecords(domain) {
                 try {
-                    // Use Google's DNS-over-HTTPS API to check MX records
                     const response = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`, {
                         method: 'GET',
                         mode: 'cors',
@@ -796,7 +795,6 @@
 
                     const data = await response.json();
                     
-                    // Status 0 = NOERROR (success), Status 3 = NXDOMAIN (domain doesn't exist)
                     if (data.Status === 3) {
                         return { hasMX: false, error: 'Domain does not exist' };
                     }
@@ -805,9 +803,7 @@
                         return { hasMX: false, error: 'DNS query returned error' };
                     }
 
-                    // Check if Answer section exists and contains MX records
                     if (data.Answer && data.Answer.length > 0) {
-                        // MX records have type 15
                         const mxRecords = data.Answer.filter(record => record.Type === 15);
                         if (mxRecords.length > 0) {
                             return { 
@@ -818,7 +814,6 @@
                         }
                     }
 
-                    // No MX records found - domain exists but cannot receive email
                     return { hasMX: false, error: 'Domain has no mail servers configured' };
 
                 } catch (error) {
@@ -829,7 +824,6 @@
 
             // ============================================
             // ACTIVE EMAIL DETECTION - DOMAIN VERIFICATION
-            // Verifies the domain itself exists via A/AAAA records
             // ============================================
             async function verifyDomainExists(domain) {
                 try {
@@ -854,7 +848,6 @@
                         return { exists: true };
                     }
 
-                    // Try AAAA records as fallback
                     const aaaaResponse = await fetch(`https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=AAAA`, {
                         method: 'GET',
                         mode: 'cors'
@@ -876,7 +869,6 @@
 
             // ============================================
             // ACTIVE EMAIL DETECTION - DISPOSABLE CHECK VIA API
-            // Uses Kickbox free API for real-time disposable detection
             // ============================================
             async function verifyDisposableViaAPI(domain) {
                 try {
@@ -897,7 +889,6 @@
 
             // ============================================
             // ACTIVE EMAIL DETECTION - EMAIL REPUTATION CHECK
-            // Uses EmailRep.io to check if email has been seen/reported
             // ============================================
             async function checkEmailReputation(email) {
                 try {
@@ -980,8 +971,10 @@
                 const typo = checkDomainTypo(email);
                 if (typo) {
                     result.typo = typo;
-                    result.message = `Did you mean ${email.split('@')[0]}@${typo}?`;
+                    result.message = `Did you mean ${email.split('@')[0]}@${typo}? Please correct it.`;
                     result.type = 'warning';
+                    // Don't return - let user know but block continuation
+                    result.isActive = false;
                     return result;
                 }
 
@@ -996,6 +989,7 @@
                 if (!domainCheck.exists) {
                     result.message = `Domain "${domain}" does not exist. Please check your email.`;
                     result.type = 'invalid';
+                    result.isActive = false;
                     return result;
                 }
 
@@ -1007,6 +1001,7 @@
                 if (!mxCheck.hasMX) {
                     result.message = `This domain cannot receive emails. Please use a different email address.`;
                     result.type = 'invalid';
+                    result.isActive = false;
                     return result;
                 }
 
@@ -1016,6 +1011,7 @@
                     result.disposable = true;
                     result.message = 'Disposable email addresses are not allowed. Please use a real email.';
                     result.type = 'invalid';
+                    result.isActive = false;
                     return result;
                 }
 
@@ -1028,23 +1024,23 @@
                         result.disposable = true;
                         result.message = 'Disposable email addresses are not allowed. Please use a real email.';
                         result.type = 'invalid';
+                        result.isActive = false;
                         return result;
                     }
 
                     if (reputation.suspicious || reputation.blacklisted || reputation.spam) {
                         result.message = 'This email appears to be suspicious. Please use a different email.';
                         result.type = 'invalid';
+                        result.isActive = false;
                         return result;
                     }
 
-                    // If we have reputation data and it's deliverable, mark as active
                     if (reputation.deliverable === true) {
                         result.isActive = true;
                     }
                 }
 
-                // If MX records exist and domain exists, email is likely active
-                // Even without reputation data, MX records mean the domain can receive mail
+                // If MX records exist and domain exists, email is active
                 if (result.hasMXRecords && result.domainExists) {
                     result.isActive = true;
                 }
@@ -1057,10 +1053,11 @@
                     } else {
                         result.message = `✓ Active email - Verified mail server at ${domain}`;
                     }
+                    result.type = 'valid';
                 } else {
-                    result.message = 'Valid email address';
+                    result.message = 'Email verification incomplete. Please try again.';
+                    result.type = 'invalid';
                 }
-                result.type = 'valid';
                 return result;
             }
 
@@ -1175,7 +1172,6 @@
                     return;
                 }
 
-                // Show checking state
                 emailInput.classList.add('checking');
                 emailInput.classList.remove('error', 'valid');
                 statusElement.classList.add('show', 'checking');
@@ -1233,7 +1229,7 @@
                 }
             });
 
-            // Handle Google/Apple Continue button
+            // Handle Google/Apple Continue button - ONLY ALLOW ACTIVE EMAILS
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
@@ -1257,7 +1253,15 @@
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailField, emailError, result);
 
-                if (result.type === 'invalid') {
+                // CRITICAL: Only allow continuation if email is ACTIVE
+                if (!result.isActive) {
+                    emailField.classList.add('error');
+                    if (!result.message || result.type === 'warning') {
+                        emailError.textContent = 'Please use an active email address that can receive messages';
+                    } else {
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                    }
+                    emailError.classList.add('show');
                     emailField.focus();
                     return;
                 }
@@ -1325,7 +1329,7 @@
 
             attachSocialHandlers();
 
-            // Main Continue button (email signup) - with validation
+            // Main Continue button (email signup) - ONLY ALLOW ACTIVE EMAILS
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const emailError = document.getElementById('emailError');
@@ -1346,7 +1350,15 @@
                 const result = await validateEmail(email);
                 updateValidationStatus(statusElement, emailInput, emailError, result);
 
-                if (result.type === 'invalid') {
+                // CRITICAL: Only allow continuation if email is ACTIVE
+                if (!result.isActive) {
+                    emailInput.classList.add('error');
+                    if (!result.message || result.type === 'warning') {
+                        emailError.textContent = 'Please use an active email address that can receive messages';
+                    } else {
+                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                    }
+                    emailError.classList.add('show');
                     emailInput.focus();
                     return;
                 }
