@@ -1,9 +1,9 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Signup - Black Leo Music</title> 
+    <title>Email Signup - Black Leo Music</title>
     <style>
         * {
             margin: 0;
@@ -23,7 +23,7 @@
 
         .app-container {
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             height: 850px;
             background: white;
             border-radius: 40px;
@@ -819,10 +819,10 @@
 
                 const domain = getDomain(email);
 
-                // Check 2: Disposable (INSTANT)
+                // Check 2: Disposable (INSTANT) → "Couldn't find this account"
                 if (isDisposableEmail(email)) {
                     result.checks.disposable = true;
-                    result.message = 'Disposable email addresses are not allowed. Please use a real email.';
+                    result.message = "Couldn't find this account";
                     result.type = 'invalid';
                     return result;
                 }
@@ -837,10 +837,10 @@
                     return result;
                 }
 
-                // Check 4: Suspicious patterns (INSTANT)
+                // Check 4: Suspicious patterns (INSTANT) → "Couldn't find this account"
                 if (isSuspiciousEmail(email)) {
                     result.checks.suspicious = true;
-                    result.message = 'This email appears to be fake or inactive. Please use a real email address.';
+                    result.message = "Couldn't find this account";
                     result.type = 'invalid';
                     return result;
                 }
@@ -856,7 +856,6 @@
                 }
 
                 // Check 6: For unknown domains, do a quick DNS check with timeout
-                // This is the only network call, and it has a 2-second timeout
                 return validateEmailWithDNS(email, domain, result);
             }
 
@@ -894,15 +893,15 @@
                     }
 
                     // DNS failed or no MX records - mark as inactive
-                    result.message = `Domain "${domain}" cannot receive emails. Please use a different email address.`;
+                    result.message = "Couldn't find this account";
                     result.type = 'invalid';
                     result.isActive = false;
                     return result;
 
                 } catch (error) {
-                    // Network error or timeout - be lenient but warn
-                    result.message = `Could not verify ${domain}. Please ensure this is a real email address.`;
-                    result.type = 'warning';
+                    // Network error or timeout
+                    result.message = "Couldn't find this account";
+                    result.type = 'invalid';
                     result.isActive = false;
                     return result;
                 }
@@ -1113,7 +1112,7 @@
                     
                     if (!dnsResult.isActive) {
                         emailField.classList.add('error');
-                        emailError.textContent = dnsResult.message || 'This email is not active. Please use a different email.';
+                        emailError.textContent = "Couldn't find this account";
                         emailError.classList.add('show');
                         emailField.focus();
                         return;
@@ -1123,7 +1122,7 @@
                     
                     if (!result.isActive) {
                         emailField.classList.add('error');
-                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                        emailError.textContent = result.message || "Couldn't find this account";
                         emailError.classList.add('show');
                         emailField.focus();
                         return;
@@ -1220,7 +1219,7 @@
                     
                     if (!dnsResult.isActive) {
                         emailInput.classList.add('error');
-                        emailError.textContent = dnsResult.message || 'This email is not active. Please use a different email.';
+                        emailError.textContent = "Couldn't find this account";
                         emailError.classList.add('show');
                         emailInput.focus();
                         return;
@@ -1230,7 +1229,7 @@
                     
                     if (!result.isActive) {
                         emailInput.classList.add('error');
-                        emailError.textContent = result.message || 'This email is not active. Please use a different email.';
+                        emailError.textContent = result.message || "Couldn't find this account";
                         emailError.classList.add('show');
                         emailInput.focus();
                         return;
