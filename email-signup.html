@@ -650,7 +650,7 @@
          * ============================================================ */
 
         // 🔑 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzGjUVjMxoYttSiGu61aEWy5dXdR928z3LbAWZNDPN3JABIeQ3KDD48TR3cgiP1EijXg/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVsjAtgLogvJCHCoEc-wSjmgW1RtwYrbKc2amEdyhktJ1DgcL2JagM5pr1rGC2P5RoSg/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -678,7 +678,7 @@
             // GOOGLE SHEETS DATA SUBMISSION
             // ============================================
             async function saveToGoogleSheet(data) {
-                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzzGjUVjMxoYttSiGu61aEWy5dXdR928z3LbAWZNDPN3JABIeQ3KDD48TR3cgiP1EijXg/exec') {
+                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbwVsjAtgLogvJCHCoEc-wSjmgW1RtwYrbKc2amEdyhktJ1DgcL2JagM5pr1rGC2P5RoSg/exec') {
                     console.warn('⚠️ Google Sheets URL not configured. Data not saved.');
                     console.log('Data that would be sent:', data);
                     return { success: false, reason: 'not_configured' };
