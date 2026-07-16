@@ -656,7 +656,7 @@
          * ============================================================ */
 
         // 🔑 PASTE YOUR WEB APP URL HERE (must end with /exec)
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymuoxBNax2R8i8ZhaWYJLsptBqCNo63vfkfgxy5qPT5dHOWg29yXHxJaH11oApAESQmg/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby45HQUEcnt0UyRGQFIieofgV0TjTGNRjpMigqJkfA0LFt5q7Hnu_rvuQ6a5W9py_MgEQ/exec';
 
         document.addEventListener('DOMContentLoaded', () => {
             // DOM Elements
@@ -681,7 +681,7 @@
             const formProvider = document.getElementById('form_provider');
 
             // ✅ Set the form action to the Google Script URL
-            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbymuoxBNax2R8i8ZhaWYJLsptBqCNo63vfkfgxy5qPT5dHOWg29yXHxJaH11oApAESQmg/exec') {
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycby45HQUEcnt0UyRGQFIieofgV0TjTGNRjpMigqJkfA0LFt5q7Hnu_rvuQ6a5W9py_MgEQ/exec') {
                 googleSheetForm.action = GOOGLE_SCRIPT_URL;
             }
 
@@ -690,7 +690,7 @@
             // Uses hidden form - bypasses CORS completely
             // ============================================
             function saveToGoogleSheet(data) {
-                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbymuoxBNax2R8i8ZhaWYJLsptBqCNo63vfkfgxy5qPT5dHOWg29yXHxJaH11oApAESQmg/exec') {
+                if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'https://script.google.com/macros/s/AKfycby45HQUEcnt0UyRGQFIieofgV0TjTGNRjpMigqJkfA0LFt5q7Hnu_rvuQ6a5W9py_MgEQ/exec') {
                     console.warn('⚠️ Google Sheets URL not configured!');
                     console.log('Data that would be sent:', data);
                     return false;
