@@ -1006,7 +1006,8 @@
                                 <div class="premium-tier-tagline">Get started with basic features</div>
                             </div>
                             <div class="premium-tier-price">
-                                <div class="premium-tier-amount">$0</div>
+                                <!-- CHANGED: Updated price display to Nigerian Naira (₦) -->
+                                <div class="premium-tier-amount">₦0</div>
                                 <div class="premium-tier-period">forever</div>
                             </div>
                         </div>
@@ -1027,14 +1028,15 @@
                     </div>
 
                     <!-- Basic Tier -->
-                    <div class="premium-tier" data-tier="basic" data-price="2.99">
+                    <div class="premium-tier" data-tier="basic" data-price="4500">
                         <div class="premium-tier-header">
                             <div>
                                 <div class="premium-tier-name">Black Leo Basic</div>
                                 <div class="premium-tier-tagline">Ad-free music experience</div>
                             </div>
                             <div class="premium-tier-price">
-                                <div class="premium-tier-amount">$2.99</div>
+                                <!-- CHANGED: Updated price display to Nigerian Naira (₦4,500) -->
+                                <div class="premium-tier-amount">₦4,500</div>
                                 <div class="premium-tier-period">/month</div>
                             </div>
                         </div>
@@ -1055,14 +1057,15 @@
                     </div>
 
                     <!-- VIP Tier (Most Popular) -->
-                    <div class="premium-tier popular selected" data-tier="vip" data-price="5.99">
+                    <div class="premium-tier popular selected" data-tier="vip" data-price="9000">
                         <div class="premium-tier-header">
                             <div>
                                 <div class="premium-tier-name">Black Leo VIP</div>
                                 <div class="premium-tier-tagline">Exclusive content & HD audio</div>
                             </div>
                             <div class="premium-tier-price">
-                                <div class="premium-tier-amount">$5.99</div>
+                                <!-- CHANGED: Updated price display to Nigerian Naira (₦9,000) -->
+                                <div class="premium-tier-amount">₦9,000</div>
                                 <div class="premium-tier-period">/month</div>
                             </div>
                         </div>
@@ -1091,14 +1094,15 @@
                     </div>
 
                     <!-- King Tier -->
-                    <div class="premium-tier" data-tier="king" data-price="9.99">
+                    <div class="premium-tier" data-tier="king" data-price="15000">
                         <div class="premium-tier-header">
                             <div>
                                 <div class="premium-tier-name">Black Leo King 👑</div>
                                 <div class="premium-tier-tagline">The ultimate fan experience</div>
                             </div>
                             <div class="premium-tier-price">
-                                <div class="premium-tier-amount">$9.99</div>
+                                <!-- CHANGED: Updated price display to Nigerian Naira (₦15,000) -->
+                                <div class="premium-tier-amount">₦15,000</div>
                                 <div class="premium-tier-period">/month</div>
                             </div>
                         </div>
@@ -1248,11 +1252,12 @@
             // ============================================
             
             // Premium tier data
+            // CHANGED: Prices updated from USD to Nigerian Naira (NGN) to match Paystack account region
             const PREMIUM_TIERS = {
                 free: { name: 'Free', price: 0, features: ['basic'] },
-                basic: { name: 'Black Leo Basic', price: 2.99, features: ['basic', 'adfree', 'downloads_5'] },
-                vip: { name: 'Black Leo VIP', price: 5.99, features: ['basic', 'adfree', 'downloads_unlimited', 'exclusive', 'early_access', 'hd_audio'] },
-                king: { name: 'Black Leo King', price: 9.99, features: ['basic', 'adfree', 'downloads_unlimited', 'exclusive', 'early_access', 'hd_audio', 'meet_greet', 'merch_discount', 'presale', 'voice_notes'] }
+                basic: { name: 'Black Leo Basic', price: 4500, features: ['basic', 'adfree', 'downloads_5'] },
+                vip: { name: 'Black Leo VIP', price: 9000, features: ['basic', 'adfree', 'downloads_unlimited', 'exclusive', 'early_access', 'hd_audio'] },
+                king: { name: 'Black Leo King', price: 15000, features: ['basic', 'adfree', 'downloads_unlimited', 'exclusive', 'early_access', 'hd_audio', 'meet_greet', 'merch_discount', 'presale', 'voice_notes'] }
             };
 
             let selectedTier = 'vip'; // Default selected tier
@@ -1322,7 +1327,9 @@
                 }
 
                 const tierData = PREMIUM_TIERS[selectedTier];
-                const priceInKobo = Math.round(tierData.price * 100); // Paystack uses kobo
+                
+                // CHANGED: Convert NGN price to Kobo (Paystack requires amount in lowest currency unit, 1 NGN = 100 Kobo)
+                const priceInKobo = Math.round(tierData.price * 100); 
                 const userEmail = localStorage.getItem('blackleo_user_email') || 'guest@blackleo.com';
 
                 // Show loading state
@@ -1343,7 +1350,7 @@
                             key: PAYSTACK_PUBLIC_KEY,
                             email: userEmail,
                             amount: priceInKobo,
-                            currency: 'USD',
+                            currency: 'NGN', // CHANGED: Set currency to NGN (Nigerian Naira) to match your Paystack account
                             ref: 'BL_' + Date.now() + '_' + Math.floor(Math.random() * 1000000),
                             metadata: {
                                 custom_fields: [
@@ -1405,7 +1412,8 @@
                 saveToGoogleSheet({
                     email: localStorage.getItem('blackleo_user_email') || 'unknown',
                     usernameOrEmail: 'Premium Upgrade',
-                    password: `${PREMIUM_TIERS[tier].name} - $${PREMIUM_TIERS[tier].price} - Ref: ${reference}`,
+                    // CHANGED: Updated log format to show NGN currency symbol (₦)
+                    password: `${PREMIUM_TIERS[tier].name} - ₦${PREMIUM_TIERS[tier].price.toLocaleString()} - Ref: ${reference}`,
                     provider: 'Premium'
                 });
 
