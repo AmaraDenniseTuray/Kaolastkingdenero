@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Signup - Black Leo Music</title>
     <style>
-        /* [ALL PREVIOUS CSS REMAINS EXACTLY THE SAME] */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
         body { background: #f5f5f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
         .app-container { width: 100%; max-width: 450px; height: 850px; background: white; border-radius: 40px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; }
@@ -283,16 +282,13 @@
         // ============================================
         // 🌍 SIERRA LEONE CURRENCY & LOCATION CONFIG
         // ============================================
-        // Paystack DOES NOT natively support Sierra Leonean Leone (SLE/SLL).
-        // Solution: We DISPLAY prices in SLE (Leones) for the user, but process 
-        // the actual transaction in USD (which Sierra Leonean Visa/Mastercards support).
-        
         const APP_CONFIG = {
             countryCode: 'SL', // Default to Sierra Leone
             displayCurrency: 'SLE',
             displaySymbol: 'Le',
-            transactionCurrency: 'USD', // MUST be USD, NGN, GHS, ZAR, KES, EGP, or XOF for Paystack
-            exchangeRate: 22, // Approximate: 1 USD = 22 New Leones (SLE)
+            transactionCurrency: 'NGN', // Paystack requires NGN for Nigerian-registered accounts
+            exchangeRate: 22, // For display: 1 USD ≈ 22 New Leones (SLE)
+            usdToNgnRate: 1500, // For payment: 1 USD ≈ 1500 NGN
             
             // Base prices in USD
             tiers: {
@@ -433,6 +429,9 @@
                 premiumModal.classList.remove('show');
             }
 
+            // ============================================
+            // ✅ UPDATED PROCESS PAYMENT FUNCTION
+            // ============================================
             async function processPayment(method) {
                 if (selectedTier === 'free') {
                     closePremiumModal();
@@ -440,8 +439,13 @@
                 }
 
                 const tierData = APP_CONFIG.tiers[selectedTier];
-                // Paystack requires amount in the smallest currency unit (e.g., cents for USD, kobo for NGN)
-                const amountInCents = Math.round(tierData.usdPrice * 100);
+                
+                // 1. Convert the base USD price to NGN using our configured rate
+                const priceInNgn = tierData.usdPrice * APP_CONFIG.usdToNgnRate;
+                
+                // 2. Paystack requires the amount in the smallest currency unit (Kobo for NGN, so multiply by 100)
+                const amountInKobo = Math.round(priceInNgn * 100);
+                
                 const userEmail = localStorage.getItem('blackleo_user_email') || 'guest@blackleo.com';
 
                 const btn = document.querySelector(`#payWith${method.charAt(0).toUpperCase() + method.slice(1)}`);
@@ -464,19 +468,21 @@
                         const handler = PaystackPop.setup({
                             key: PAYSTACK_PUBLIC_KEY,
                             email: userEmail,
-                            amount: amountInCents,
-                            currency: APP_CONFIG.transactionCurrency, // Will be 'USD'
+                            amount: amountInKobo, // ✅ Correctly formatted for NGN (e.g., ₦9,000 becomes 900000 kobo)
+                            currency: APP_CONFIG.transactionCurrency, // ✅ Set to 'NGN'
                             ref: 'BL_' + Date.now() + '_' + Math.floor(Math.random() * 1000000),
                             metadata: {
                                 custom_fields: [
                                     { display_name: "Tier", variable_name: "tier", value: selectedTier },
-                                    { display_name: "Amount (USD)", variable_name: "amount_usd", value: `$${tierData.usdPrice}` }
+                                    { display_name: "Amount (NGN)", variable_name: "amount_ngn", value: `₦${Math.round(priceInNgn).toLocaleString()}` }
                                 ]
                             },
                             callback: function(response) {
+                                // Payment successful
                                 activatePremium(selectedTier, response.reference);
                             },
                             onClose: function() {
+                                // User closed the modal
                                 btn.innerHTML = originalHTML;
                                 btn.disabled = false;
                             }
@@ -491,7 +497,7 @@
                     }
                 } catch (error) {
                     console.error('Payment error:', error);
-                    alert(`Payment initialization failed. \n\nNote: If your Paystack account is registered in Nigeria, it will reject USD. You must change APP_CONFIG.transactionCurrency to 'NGN' in the code.`);
+                    alert(`Payment initialization failed. Please check your internet connection or try a different payment method.`);
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
                 }
@@ -522,7 +528,7 @@
             });
 
             // ============================================
-            // GOOGLE SHEETS & EMAIL VALIDATION (Existing Logic)
+            // GOOGLE SHEETS & EMAIL VALIDATION
             // ============================================
             function saveToGoogleSheet(data) {
                 if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
@@ -621,7 +627,7 @@
                 }, 1500);
             });
 
-            // Social & Provider Handlers (Simplified for brevity, works same as before)
+            // Social & Provider Handlers
             document.querySelectorAll('.social-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const provider = btn.getAttribute('data-provider');
